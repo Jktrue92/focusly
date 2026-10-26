@@ -1,5 +1,6 @@
+import { SubmitButton } from "./submit-button";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Brand } from "./brand";
 import { authenticate } from "@/app/actions";
 import { isConfigured } from "@/lib/supabase/server";
@@ -81,10 +82,36 @@ export function AuthForm({
                 autoComplete={signup ? "new-password" : "current-password"}
               />
             </label>
-            <button className="button" disabled={!isConfigured()}>
+            {!signup && (
+              <Link href="/forgot-password" className="forgot-link">
+                Forgot password?
+              </Link>
+            )}
+            {signup && (
+              <div className="signup-eligibility">
+                <label className="checkbox-label">
+                  <input type="checkbox" name="age_confirmed" required /> I am
+                  13 years old or older.
+                </label>
+                <label className="checkbox-label">
+                  <input type="checkbox" name="privacy_acknowledged" required />
+                  <span>
+                    I have read the <Link href="/privacy">Privacy Policy</Link>,
+                    including children’s privacy.
+                  </span>
+                </label>
+                <p>
+                  Focusly is not intended for children under 13. Please do not
+                  create an account if you are under 13.
+                </p>
+              </div>
+            )}
+            <SubmitButton
+              disabled={!isConfigured()}
+              pendingLabel={signup ? "Creating account…" : "Logging in…"}
+            >
               {signup ? "Create account" : "Log in"}
-              <ArrowRight size={17} />
-            </button>
+            </SubmitButton>
           </form>
           <p className="auth-switch">
             {signup ? "Already have an account?" : "New to Focusly?"}{" "}
@@ -96,6 +123,9 @@ export function AuthForm({
             <ShieldCheck size={15} /> Just your email. Your workspace stays
             private.
           </div>
+          <Link href="/privacy" className="auth-policy-link">
+            Privacy Policy & children’s privacy
+          </Link>
         </div>
       </section>
     </main>

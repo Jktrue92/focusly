@@ -178,7 +178,7 @@ export default function Home() {
       <footer>
         <Brand />
         <span>Less stress. More progress.</span>
-        <span>Made for your everyday progress.</span>
+        <Link href="/privacy">Privacy & children’s privacy</Link>
       </footer>
     </div>
   );

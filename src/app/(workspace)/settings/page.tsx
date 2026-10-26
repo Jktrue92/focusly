@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireUser } from "@/lib/data";
 import { logout, updatePassword } from "@/app/actions";
 export default async function Settings({
@@ -46,6 +47,11 @@ export default async function Settings({
           <button className="button small">Update password</button>
         </form>
       </section>
+      <p className="settings-privacy">
+        <Link href="/privacy">
+          Read our Privacy Policy & children’s privacy notice
+        </Link>
+      </p>
       <form action={logout}>
         <button className="secondary-button">Log out of Focusly</button>
       </form>

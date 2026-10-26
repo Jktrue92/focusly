@@ -26,5 +26,6 @@ export const config = {
     "/classes/:path*",
     "/assignments/:path*",
     "/settings/:path*",
+    "/reset-password/:path*",
   ],
 };

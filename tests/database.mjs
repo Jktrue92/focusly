@@ -29,9 +29,15 @@ async function asUser(user, operation) {
     throw e;
   }
 }
-const repair = await readFile(new URL('../supabase/migrations/202610260001_repair_partial_setup.sql', import.meta.url), 'utf8');
+const repair = await readFile(
+  new URL(
+    "../supabase/migrations/202610260001_repair_partial_setup.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 // Simulate the hosted partial setup: classes exists, assignments does not.
-await db.exec('drop table public.assignments');
+await db.exec("drop table public.assignments");
 await db.exec(repair);
 const course = await asUser(
   alice,
@@ -55,8 +61,11 @@ const assignment = await asUser(
 // Repair must be repeatable and retain existing student work.
 await db.exec(repair);
 await db.exec(repair);
-assert.equal((await db.query('select id from public.classes')).rows.length, 1);
-assert.equal((await db.query('select id from public.assignments')).rows.length, 1);
+assert.equal((await db.query("select id from public.classes")).rows.length, 1);
+assert.equal(
+  (await db.query("select id from public.assignments")).rows.length,
+  1,
+);
 await asUser(bob, async () => {
   assert.equal((await db.query("select * from public.classes")).rows.length, 0);
   assert.equal(
@@ -153,5 +162,43 @@ assert.equal(
 );
 console.log(
   "PASS: migration, CRUD, per-user RLS, cross-owner references, constraints, anonymous denial, class unlinking, auth-user cascade (embedded PostgreSQL; not hosted Supabase).",
+);
+// Eligibility trigger applies only to future accounts, not existing users.
+await db.exec(
+  "alter table auth.users add column raw_user_meta_data jsonb not null default '{}'::jsonb",
+);
+await db.exec(
+  await readFile(
+    new URL(
+      "../supabase/migrations/202610260002_signup_eligibility.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  ),
+);
+for (const metadata of [
+  {},
+  { age_13_or_older: false, privacy_policy_version: "2026-10-26" },
+  { age_13_or_older: true },
+]) {
+  await assert.rejects(
+    db.query(
+      "insert into auth.users(id,raw_user_meta_data) values (gen_random_uuid(), $1)",
+      [JSON.stringify(metadata)],
+    ),
+    /eligibility/,
+  );
+}
+await db.query(
+  "insert into auth.users(id,raw_user_meta_data) values (gen_random_uuid(), $1)",
+  [
+    JSON.stringify({
+      age_13_or_older: true,
+      privacy_policy_version: "2026-10-26",
+    }),
+  ],
+);
+console.log(
+  "PASS: database rejects absent/under-13 attestations and missing policy acknowledgements; eligible signup succeeds.",
 );
 await db.close();

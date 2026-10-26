@@ -1,12 +1,6 @@
 import Link from "next/link";
-import {
-  BookOpen,
-  LayoutDashboard,
-  ListTodo,
-  LogOut,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { LogOut, Sparkles } from "lucide-react";
+import { WorkspaceNav } from "@/components/workspace-nav";
 import { Brand } from "@/components/brand";
 import { requireUser } from "@/lib/data";
 import { logout } from "@/app/actions";
@@ -21,21 +15,11 @@ export default async function WorkspaceLayout({
       <aside className="sidebar">
         <Brand />
         <span className="nav-caption">YOUR WORKSPACE</span>
-        <nav>
-          <Link href="/dashboard">
-            <LayoutDashboard size={19} /> Overview
-          </Link>
-          <Link href="/classes">
-            <BookOpen size={19} /> My classes
-          </Link>
-          <Link href="/assignments">
-            <ListTodo size={19} /> Assignments
-          </Link>
-          <Link href="/settings">
-            <Settings size={19} /> Account settings
-          </Link>
-        </nav>
+        <WorkspaceNav />
         <div className="sidebar-bottom">
+          <Link href="/privacy" className="sidebar-privacy">
+            Privacy & children’s privacy
+          </Link>
           <div className="encouragement">
             <Sparkles size={20} />
             <p>

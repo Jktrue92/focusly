@@ -1,4 +1,5 @@
 "use server";
+import { eligibleForSignup, PRIVACY_VERSION } from "@/lib/eligibility";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient, isConfigured } from "@/lib/supabase/server";
@@ -31,6 +32,17 @@ export async function authenticate(form: FormData) {
     redirect(
       `/${mode}?message=Configure+Supabase+environment+variables+first.`,
     );
+  if (
+    mode === "signup" &&
+    !eligibleForSignup(
+      form.get("age_confirmed"),
+      form.get("privacy_acknowledged"),
+    )
+  ) {
+    redirect(
+      "/signup?message=Focusly+is+for+ages+13+and+older.+Confirm+your+eligibility+and+read+the+privacy+policy.",
+    );
+  }
   const email = text(form, "email", 254);
   const password = String(form.get("password") ?? "");
   if (
@@ -44,15 +56,26 @@ export async function authenticate(form: FormData) {
   const supabase = await createClient();
   const { data, error } =
     mode === "signup"
-      ? await supabase.auth.signUp({ email, password })
+      ? await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              age_13_or_older: true,
+              privacy_policy_version: PRIVACY_VERSION,
+            },
+          },
+        })
       : await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    console.error('Focusly authentication failed', {
+    console.error("Focusly authentication failed", {
       operation: mode,
-      code: error.code ?? 'unknown',
+      code: error.code ?? "unknown",
       status: error.status,
     });
-    redirect(`/${mode}?message=${encodeURIComponent(authErrorMessage(error, mode))}`);
+    redirect(
+      `/${mode}?message=${encodeURIComponent(authErrorMessage(error, mode))}`,
+    );
   }
   if (!data.session)
     redirect(
