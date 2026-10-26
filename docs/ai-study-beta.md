@@ -75,3 +75,7 @@ Review current provider documentation/terms and pricing before enabling. Model n
 ## Large libraries and exports
 
 Library summaries and exports use paged reads instead of silently accepting the database API's per-response cap. They fail explicitly above 20,000 rows per table. The downloadable JSON export is limited to 4 MB to fit platform response limits; larger exports return an error directing the user to the privacy team for a complete copy. The operator must fulfill those requests through an appropriate secure process rather than treating the app limit as a reason to deny access. A study session reads only the selected set's maximum 200 cards.
+
+## Disabled-state diagnostics
+
+Running SQL does not enable or disable AI. The AI forms require an enabled deployment, a supported provider, a nonempty server key and (for Cloudflare) a valid 32-character account ID and supported model. The UI now shows a safe, specific setup reason without exposing keys or account ID values. When Cloudflare is selected, a retained `gpt-4.1-mini` model setting is mapped to the supported Cloudflare default; the provider is never changed and no paid fallback is introduced. Other unsupported models still fail closed. Vercel variables must be present in the deployment's environment and applied by a redeploy. Old deployment URLs retain old code/settings.

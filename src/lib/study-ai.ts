@@ -7,6 +7,7 @@ import {
 export {
   AI_CONSENT_VERSION,
   aiConfigured,
+  aiSetupMessage,
   aiProvider,
   aiProviderLabel,
   aiModel,

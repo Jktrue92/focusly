@@ -16,22 +16,51 @@ export function aiProviderLabel() {
       : "the configured AI service";
 }
 export function aiModel() {
+  const configured = process.env.DAYLANE_AI_MODEL?.trim();
+  // A retained OpenAI default is not a valid Workers AI model. Migrate it safely
+  // within the selected provider; this never switches providers or enables billing.
+  if (
+    aiProvider() === "cloudflare" &&
+    (!configured || configured === "gpt-4.1-mini")
+  )
+    return CLOUDFLARE_MODEL;
   return (
-    process.env.DAYLANE_AI_MODEL?.trim() ||
+    configured ||
     (aiProvider() === "cloudflare" ? CLOUDFLARE_MODEL : "gpt-4.1-mini")
   );
 }
+export function aiSetupIssues(): string[] {
+  const issues: string[] = [];
+  if (process.env.DAYLANE_AI_ENABLED?.trim().toLowerCase() !== "true")
+    issues.push("disabled");
+  const provider = aiProvider();
+  if (provider === null) issues.push("provider");
+  if (!process.env.DAYLANE_AI_API_KEY?.trim()) issues.push("key");
+  if (provider === "cloudflare") {
+    if (
+      !/^[0-9a-f]{32}$/i.test(process.env.DAYLANE_AI_ACCOUNT_ID?.trim() ?? "")
+    )
+      issues.push("account");
+    if (!cloudflareModels.includes(aiModel())) issues.push("model");
+  }
+  return issues;
+}
+export function aiSetupMessage() {
+  const messages: Record<string, string> = {
+    disabled:
+      "AI is switched off on this deployment. The app owner needs to enable it.",
+    provider:
+      "The AI provider selection is invalid. The app owner needs to finish configuration.",
+    key: "The AI service key is missing. The app owner needs to configure it.",
+    account:
+      "The Cloudflare account identifier is missing or invalid. The app owner needs to use the Account ID from Workers AI.",
+    model:
+      "The selected Cloudflare model is unsupported. The app owner needs to choose a supported free-tier model.",
+  };
+  return messages[aiSetupIssues()[0]] ?? "";
+}
 export function aiConfigured() {
-  return (
-    process.env.DAYLANE_AI_ENABLED?.trim().toLowerCase() === "true" &&
-    Boolean(process.env.DAYLANE_AI_API_KEY?.trim()) &&
-    aiProvider() !== null &&
-    (aiProvider() !== "cloudflare" ||
-      (/^[0-9a-f]{32}$/i.test(
-        process.env.DAYLANE_AI_ACCOUNT_ID?.trim() ?? "",
-      ) &&
-        cloudflareModels.includes(aiModel())))
-  );
+  return aiSetupIssues().length === 0;
 }
 export function providerConsentMatches(form: FormData) {
   return (

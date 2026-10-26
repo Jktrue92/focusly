@@ -41,6 +41,9 @@ const {
   AIProviderError,
   aiFailureMessage,
   aiConfigured,
+  aiModel,
+  aiSetupIssues,
+  aiSetupMessage,
   aiProvider,
   AI_CONSENT_VERSION,
   providerConsentMatches,
@@ -388,6 +391,29 @@ try {
   process.env.DAYLANE_AI_ENABLED = " true ";
   process.env.DAYLANE_AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
   assert.equal(aiConfigured(), true);
+  process.env.DAYLANE_AI_MODEL = "gpt-4.1-mini";
+  assert.equal(aiModel(), "@cf/meta/llama-3.3-70b-instruct-fp8-fast");
+  assert.equal(aiConfigured(), true);
+  process.env.DAYLANE_AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+  process.env.DAYLANE_AI_ACCOUNT_ID = "invalid";
+  assert.equal(aiConfigured(), false);
+  assert.deepEqual(aiSetupIssues(), ["account"]);
+  assert.match(aiSetupMessage(), /account identifier/);
+  assert.equal(aiSetupMessage().includes("test-token"), false);
+  process.env.DAYLANE_AI_ACCOUNT_ID = "a".repeat(32);
+  process.env.DAYLANE_AI_MODEL = "unsupported";
+  assert.deepEqual(aiSetupIssues(), ["model"]);
+  assert.match(aiSetupMessage(), /unsupported/);
+  process.env.DAYLANE_AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+  process.env.DAYLANE_AI_ENABLED = "false";
+  assert.deepEqual(aiSetupIssues(), ["disabled"]);
+  assert.match(aiSetupMessage(), /switched off/);
+  process.env.DAYLANE_AI_ENABLED = "true";
+  delete process.env.DAYLANE_AI_API_KEY;
+  assert.deepEqual(aiSetupIssues(), ["key"]);
+  assert.match(aiSetupMessage(), /key is missing/);
+  process.env.DAYLANE_AI_API_KEY = " test-token ";
+
   assert.equal(aiProvider(), "cloudflare");
   const consent = new FormData();
   consent.set("ai_consent", "on");

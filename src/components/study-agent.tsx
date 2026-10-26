@@ -12,11 +12,13 @@ const initial: AIStudyState = { message: "" };
 export function StudyAgent({
   decks,
   enabled,
+  configurationHint,
   providerLabel = "OpenAI",
   providerId = "openai",
 }: {
   decks: StudyDeck[];
   enabled: boolean;
+  configurationHint?: string;
   providerLabel?: string;
   providerId?: AIProvider;
 }) {
@@ -67,8 +69,10 @@ export function StudyAgent({
       )}
       {!enabled && (
         <div className="notice" role="status">
-          The AI beta is not enabled on this deployment yet. No notes will be
-          sent. You can still create and practice with your own flashcards.
+          {configurationHint ||
+            "The AI beta is not enabled on this deployment yet."}{" "}
+          No notes will be sent. You can still create and practice with your own
+          flashcards.
         </div>
       )}
       <section className="panel">

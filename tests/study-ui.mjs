@@ -20,7 +20,7 @@ const id='11111111-1111-4111-8111-111111111111';const deck={id,title:'Biology ·
 const cards=[['Cell','Basic unit of life.'],['DNA','Carries genetic information.'],['Mitochondria','Produces ATP.'],['Nucleus','Contains DNA.']].map(([term,definition],i)=>({id:'22222222-2222-4222-8222-22222222222'+i,deck_id:id,term,definition,source_excerpt:'',created_at:''}));const classes=[{id,name:'Physics',color:'#7065F0'}];
 const meetings=[{id:'m1',class_id:id,weekday:1,start_time:'09:00:00',end_time:'10:00:00',term_start:'2026-10-01',term_end:'2026-12-31',timezone:'America/New_York'}];
 window.__fixture=new URLSearchParams(location.search).get('fixture')||'session';
-const views={session:<StudySession deckId={id} title={deck.title} cards={cards}/>,small:<StudySession deckId={id} title={deck.title} cards={cards.slice(0,2)}/>,library:<StudyLibrary decks={[deck]} cards={cards} progress={[]} available/>,empty:<StudyLibrary decks={[]} cards={[]} progress={[]} available/>,editor:<DeckEditor deck={deck} cards={cards} progress={[]}/>,agent:<StudyAgent decks={[deck]} enabled/>,agentCf:<StudyAgent decks={[deck]} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,disabled:<StudyAgent decks={[deck]} enabled={false}/>,import:<ScheduleImport classes={classes} enabled/>,importCf:<ScheduleImport classes={classes} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,schedule:<ScheduleView classes={classes} meetings={meetings} available/>};
+const views={session:<StudySession deckId={id} title={deck.title} cards={cards}/>,small:<StudySession deckId={id} title={deck.title} cards={cards.slice(0,2)}/>,library:<StudyLibrary decks={[deck]} cards={cards} progress={[]} available/>,empty:<StudyLibrary decks={[]} cards={[]} progress={[]} available/>,editor:<DeckEditor deck={deck} cards={cards} progress={[]}/>,agent:<StudyAgent decks={[deck]} enabled/>,agentCf:<StudyAgent decks={[deck]} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,disabled:<StudyAgent decks={[deck]} enabled={false}/>,disabledAccount:<StudyAgent decks={[deck]} enabled={false} providerLabel="Cloudflare Workers AI" providerId="cloudflare" configurationHint="The Cloudflare account identifier is missing or invalid."/>,import:<ScheduleImport classes={classes} enabled/>,importCf:<ScheduleImport classes={classes} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,schedule:<ScheduleView classes={classes} meetings={meetings} available/>};
 createRoot(document.getElementById('root')).render(<div className="workspace"><aside className="sidebar"><Brand/><span className="nav-caption">YOUR WORKSPACE</span><WorkspaceNav/></aside><main className="workspace-main">{views[window.__fixture]}</main></div>);`;
 const scheduleDraft = {
   classes: [
@@ -212,6 +212,17 @@ try {
       .isDisabled(),
     true,
   );
+  await open("disabledAccount");
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Draft summary & flashcards" })
+      .isDisabled(),
+    true,
+  );
+  await page
+    .getByRole("status")
+    .filter({ hasText: "account identifier is missing or invalid" })
+    .waitFor();
   await open("agent");
   await page
     .getByLabel("Your study notes")

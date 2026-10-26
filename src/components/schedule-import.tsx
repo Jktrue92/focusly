@@ -313,11 +313,13 @@ function ScheduleReview({
 export function ScheduleImport({
   classes,
   enabled,
+  configurationHint,
   providerLabel = "OpenAI",
   providerId = "openai",
 }: {
   classes: ClassRecord[];
   enabled: boolean;
+  configurationHint?: string;
   providerLabel?: string;
   providerId?: AIProvider;
 }) {
@@ -367,8 +369,9 @@ export function ScheduleImport({
       )}
       {!enabled && (
         <p className="notice">
-          AI import is not enabled on this deployment. No file will be sent. You
-          can add your class meetings manually from the schedule page.
+          {configurationHint || "AI import is not enabled on this deployment."}{" "}
+          No file will be sent. You can add your class meetings manually from
+          the schedule page.
         </p>
       )}
       <section className="panel">
