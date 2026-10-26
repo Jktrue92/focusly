@@ -26,6 +26,8 @@ export const config = {
     "/classes/:path*",
     "/assignments/:path*",
     "/settings/:path*",
+    "/study/:path*",
+    "/schedule/:path*",
     "/reset-password/:path*",
   ],
 };

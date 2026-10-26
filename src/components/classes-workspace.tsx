@@ -1,3 +1,4 @@
+import { weekdays, type ClassMeeting } from "@/lib/schedule";
 import Link from "next/link";
 import { ArrowUpRight, BookOpen, CheckCheck, Plus, Trash2 } from "lucide-react";
 import { saveClass, deleteClass } from "@/app/actions";
@@ -6,9 +7,11 @@ import type { Assignment, ClassRecord } from "@/lib/data";
 export function ClassesWorkspace({
   classes,
   assignments,
+  meetings = [],
 }: {
   classes: ClassRecord[];
   assignments: Assignment[];
+  meetings?: ClassMeeting[];
 }) {
   return (
     <div className="management-page">
@@ -95,6 +98,22 @@ export function ClassesWorkspace({
                 {tasks.length - complete === 1 ? "assignment" : "assignments"}{" "}
                 to do
               </p>
+              {meetings.some((m) => m.class_id === c.id) && (
+                <div className="course-meetings">
+                  {meetings
+                    .filter((m) => m.class_id === c.id)
+                    .slice(0, 2)
+                    .map((m) => (
+                      <span key={m.id}>
+                        {weekdays[m.weekday].slice(0, 3)} ·{" "}
+                        {m.start_time.slice(0, 5)}–{m.end_time.slice(0, 5)}
+                      </span>
+                    ))}
+                  <Link href="/schedule">
+                    View timetable <ArrowUpRight size={11} />
+                  </Link>
+                </div>
+              )}
               <div className="course-progress">
                 <div>
                   <span>
@@ -135,7 +154,8 @@ export function ClassesWorkspace({
                     <Trash2 size={12} /> Delete class
                   </summary>
                   <p className="tiny muted">
-                    Your assignments will be kept and become unassigned.
+                    Your assignments will be kept and become unassigned. Class
+                    meetings will be removed.
                   </p>
                   <form action={deleteClass}>
                     <input type="hidden" name="id" value={c.id} />

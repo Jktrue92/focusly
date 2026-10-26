@@ -42,3 +42,7 @@ Apply `supabase/migrations/202610260003_account_privacy.sql`. Its `delete_own_ac
 - [Current COPPA Rule, 16 CFR Part 312](https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-312), including applicability/definitions, notices, verifiable parental consent, parent rights, information security, retention and deletion.
 
 These sources were accessible during implementation. The law and actual service configuration must be reassessed before claiming compliance; a code review cannot certify legal compliance.
+
+## Optional AI processing and study data
+
+Study/schedule features add saved flashcards, selected source excerpts, review outcomes, class meeting times/timezones and import receipts. Keep data exports/deletion complete when applying migrations. The optional AI beta sends only explicitly submitted notes or the selected entire file to OpenAI, with per-request consent, bounded inputs and server-enforced user quotas. Review the provider agreement, 13+ use, retention, project spending controls and accurate policy disclosures before enabling. No raw notes/files are intentionally retained in the app database. Do not treat `store:false` as a guarantee of no provider retention. See `ai-study-beta.md` for operator actions and verification limits.

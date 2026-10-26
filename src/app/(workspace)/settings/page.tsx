@@ -24,7 +24,9 @@ export default async function Settings({
         <p className="muted">Signed in as</p>
         <strong>{user.email}</strong>
         <p className="tiny muted">
-          We store only your authentication details, classes, and assignments.
+          Your account stores your classes, assignments, timetable, study sets,
+          and review progress. Optional AI requests also have limited usage
+          records.
         </p>
       </section>
       <section className="panel settings-panel">
@@ -52,7 +54,8 @@ export default async function Settings({
       <section className="panel settings-panel data-controls">
         <h2>Your information, your choice</h2>
         <p>
-          Download a copy of your account details, classes, and assignments. The
+          Download a copy of your account details, classes, assignments,
+          timetable, study sets, review progress, and AI usage metadata. The
           export does not include your password or session tokens.
         </p>
         <a href="/api/account/export" className="secondary-button">
@@ -61,9 +64,10 @@ export default async function Settings({
         <details className="account-delete">
           <summary>Delete my account</summary>
           <p>
-            This permanently removes your account, classes, and assignments from
-            the live database. Provider backups and security logs may expire
-            separately. Export anything you want to keep first.
+            This permanently removes your account, classes, assignments,
+            timetable, study sets, progress, and AI usage records from the live
+            database. Provider backups and security logs may expire separately.
+            Export anything you want to keep first.
           </p>
           <form action={deleteAccount}>
             <label>

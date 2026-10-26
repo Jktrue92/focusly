@@ -52,7 +52,9 @@ export default function Privacy() {
           <h2>2. Information we process</h2>
           <p>
             We process your account email, authentication identifiers, password
-            credentials handled by Supabase, class names and colors, assignment
+            credentials handled by Supabase, class names and colors, class
+            meeting times and timezones, flashcard sets and saved terms,
+            definitions and source excerpts, study review outcomes, assignment
             titles, due dates, priorities, completion status, timestamps, and
             signup eligibility and policy acknowledgements. We do not request
             your birth date, school name, student ID, address, grades, or
@@ -85,6 +87,30 @@ export default function Privacy() {
             depending on their configuration. We may disclose information when
             required by law or to address security incidents. We do not offer
             your workspace to advertisers or other students.
+          </p>
+        </section>
+        <section id="ai">
+          <h2>Optional AI study and schedule tools</h2>
+          <p>
+            When you explicitly opt in, the notes or entire schedule file you
+            submit are sent to OpenAI to draft study material or a timetable.
+            The app does not automatically include your account email, other
+            classes, or other study sets. Redact sensitive personal information,
+            student IDs, names and contact details before submitting. The
+            original notes and files are not saved to Daylane’s database;
+            selected excerpts are retained as part of flashcards only if you
+            choose to save them. Reviewed schedule entries are saved only after
+            you approve them.
+          </p>
+          <p>
+            AI results can be inaccurate. Provider processing and retention
+            depend on the API and provider settings; disabling response storage
+            does not mean zero provider retention. We store limited per-account
+            request counters and the most recent consent timestamp/version to
+            limit abuse and costs. Raw notes, uploaded files and provider
+            responses are not intentionally written to application logs. Do not
+            submit sensitive information. These tools are optional and only for
+            users aged 13 and older.
           </p>
         </section>
         <section>

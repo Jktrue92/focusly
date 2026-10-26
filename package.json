@@ -14,13 +14,17 @@
     "test:visual": "node tests/dashboard-visual.mjs",
     "test:recovery": "node tests/recovery-smoke.mjs",
     "test:privacy": "node tests/privacy-theme.mjs",
-    "test:filters": "node tests/assignment-filters.mjs"
+    "test:filters": "node tests/assignment-filters.mjs",
+    "test:study:models": "node tests/study-models.mjs",
+    "test:study:db": "node tests/study-database.mjs",
+    "test:study:ui": "node tests/study-ui.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
     "lucide-react": "^1.61.0",
     "next": "16.4.3",
+    "pdf-lib": "^1.17.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
