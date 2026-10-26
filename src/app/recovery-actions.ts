@@ -35,7 +35,7 @@ export async function requestPasswordReset(form: FormData) {
     redirectTo: origin + "/auth/callback?next=/reset-password",
   });
   if (error) {
-    console.error("Focusly recovery failed", {
+    console.error("Daylane recovery failed", {
       code: error.code ?? "unknown",
       status: error.status,
     });

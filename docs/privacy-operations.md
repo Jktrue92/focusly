@@ -2,7 +2,7 @@
 
 Owner: Focusly Inc. · Public contact: hellofocusly@gmail.com · Reviewed against published sources on October 26, 2026.
 
-This is an implementation and operating checklist, not a legal opinion or a declaration of complete COPPA compliance. Focusly remains a 13+ service. It does not offer accounts to children under 13, collect birth dates, or provide a parental-consent system. A 13+ label alone does not determine whether COPPA applies: actual audience, presentation, marketing, and actual knowledge matter. Existing accounts have not been retroactively age-verified.
+This is an implementation and operating checklist, not a legal opinion or a declaration of complete COPPA compliance. Daylane remains a 13+ service. It does not offer accounts to children under 13, collect birth dates, or provide a parental-consent system. A 13+ label alone does not determine whether COPPA applies: actual audience, presentation, marketing, and actual knowledge matter. Existing accounts have not been retroactively age-verified.
 
 ## Implemented technical controls
 

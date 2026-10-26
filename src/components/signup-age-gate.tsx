@@ -27,7 +27,7 @@ export function SignupAgeGate({ children }: { children: React.ReactNode }) {
       <section className="age-gate" aria-live="polite">
         <h3>Account creation isn’t available.</h3>
         <p>
-          Focusly is for people aged 13 and older. We won’t ask for your email
+          Daylane is for people aged 13 and older. We won’t ask for your email
           or create an account.
         </p>
         <Link href="/privacy#children">Read about children’s privacy</Link>

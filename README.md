@@ -1,4 +1,6 @@
-# Focusly
+# Daylane
+
+Formerly Focusly. Daylane is the product name; Focusly Inc. remains the operator and `hellofocusly@gmail.com` remains the privacy contact. Existing GitHub/Vercel/Supabase project names and browser storage keys are retained so this rebrand does not reset preferences or the under-13 block.
 
 **Less stress. More progress.** A responsive student productivity app built with Next.js App Router, TypeScript, Tailwind CSS, Supabase SSR Auth, PostgreSQL, and lucide-react.
 
@@ -72,7 +74,7 @@ Set `NEXT_PUBLIC_SITE_URL` in Vercel to the stable production HTTPS origin (not 
 
 The `/privacy` notice identifies Focusly Inc. and describes actual storage, providers, essential cookies, retention, user choices and children's privacy. The operator supplied `hellofocusly@gmail.com` as the public privacy contact. `NEXT_PUBLIC_PRIVACY_EMAIL` can override it. Keep this inbox monitored before and after launch. `NEXT_PUBLIC_OPERATOR_NAME` can override the operator name. Review the policy against real provider settings and legal obligations before launch. No claim of COPPA certification or complete legal compliance is made.
 
-Focusly is intended for ages 13+, does not offer under-13 accounts or a parental-consent system, and does not collect a date of birth. New signups must affirm 13+ eligibility and acknowledge the policy; server actions enforce both and store only the eligibility attestation and policy version in auth metadata. Apply `supabase/migrations/202610260002_signup_eligibility.sql` in Supabase SQL Editor to enforce these declarations for direct Auth API signups too. Existing accounts are not retroactively age-verified. An attestation is not verified age assurance; supporting children under 13 requires a different product and consent design.
+Daylane is intended for ages 13+, does not offer under-13 accounts or a parental-consent system, and does not collect a date of birth. New signups must affirm 13+ eligibility and acknowledge the policy; server actions enforce both and store only the eligibility attestation and policy version in auth metadata. Apply `supabase/migrations/202610260002_signup_eligibility.sql` in Supabase SQL Editor to enforce these declarations for direct Auth API signups too. Existing accounts are not retroactively age-verified. An attestation is not verified age assurance; supporting children under 13 requires a different product and consent design.
 
 Run `npm run test:auth`, `npm run test:db`, and `npm run test:recovery` (with the app running on port 3000). The database test simulates auth roles in embedded PostgreSQL, including age eligibility rejection. Recovery smoke tests deliberately do not send emails or create accounts. End-to-end reset email delivery and password changes still require a real user-owned account and Supabase configuration.
 
@@ -80,7 +82,7 @@ Run `npm run test:auth`, `npm run test:db`, and `npm run test:recovery` (with th
 
 The fixed appearance switch offers Light, Dark and System modes across the app. Its browser-only preference persists across reloads, follows OS changes in System mode and synchronizes across tabs. It works for the current session if browser storage is unavailable. Theme initialization runs before page paint to reduce a light-theme flash.
 
-New signups now pass a neutral age-group screen before email inputs. Choosing Under 13 blocks signup and stores a browser-only block flag; eligibility remains self-declared, not independently verified. Existing accounts are not age-verified by this change. Read [Focusly's privacy operations checklist](docs/privacy-operations.md) for audience review, actual-knowledge handling, security, retention and provider responsibilities. A 13+ label does not by itself remove COPPA obligations, and no complete-compliance certification is claimed.
+New signups now pass a neutral age-group screen before email inputs. Choosing Under 13 blocks signup and stores a browser-only block flag; eligibility remains self-declared, not independently verified. Existing accounts are not age-verified by this change. Read [Daylane's privacy operations checklist](docs/privacy-operations.md) for audience review, actual-knowledge handling, security, retention and provider responsibilities. A 13+ label does not by itself remove COPPA obligations, and no complete-compliance certification is claimed.
 
 Account settings provide a private JSON export and password-confirmed self-service account deletion. Apply `supabase/migrations/202610260003_account_privacy.sql` after the eligibility migration to enable deletion. No privileged Supabase key is used in the app. The function deletes only `auth.uid()` and cascades that account's workspace. Provider backups and logs expire separately under documented operator/provider retention policies. Live export/deletion still require verification with controlled accounts after applying the migration.
 

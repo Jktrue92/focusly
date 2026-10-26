@@ -99,7 +99,7 @@ export default async function Settings({
         </Link>
       </p>
       <form action={logout}>
-        <button className="secondary-button">Log out of Focusly</button>
+        <button className="secondary-button">Log out of Daylane</button>
       </form>
     </>
   );

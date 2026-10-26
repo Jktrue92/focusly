@@ -40,7 +40,7 @@ export async function authenticate(form: FormData) {
     )
   ) {
     redirect(
-      "/signup?message=Focusly+is+for+ages+13+and+older.+Confirm+your+eligibility+and+read+the+privacy+policy.",
+      "/signup?message=Daylane+is+for+ages+13+and+older.+Confirm+your+eligibility+and+read+the+privacy+policy.",
     );
   }
   const email = text(form, "email", 254);
@@ -68,7 +68,7 @@ export async function authenticate(form: FormData) {
         })
       : await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    console.error("Focusly authentication failed", {
+    console.error("Daylane authentication failed", {
       operation: mode,
       code: error.code ?? "unknown",
       status: error.status,

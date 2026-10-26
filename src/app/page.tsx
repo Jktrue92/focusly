@@ -17,7 +17,7 @@ export default function Home() {
       <header className="public-nav">
         <Brand />
         <nav>
-          <a href="#features">Why Focusly?</a>
+          <a href="#features">Why Daylane?</a>
           <Link href="/login">Log in</Link>
           <Link className="button small" href="/signup">
             Get started <ArrowRight size={15} />
@@ -57,7 +57,7 @@ export default function Home() {
           </div>
           <div
             className="hero-art"
-            aria-label="Illustrative preview of the Focusly workspace"
+            aria-label="Illustrative preview of the Daylane workspace"
           >
             <div className="orbit orbit-one" />
             <div className="orbit orbit-two" />

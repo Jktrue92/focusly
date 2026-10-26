@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Focusly — Less stress. More progress.",
+  title: "Daylane — Less stress. More progress.",
   description:
     "A calmer space for your classes, assignments, and everything ahead.",
 };

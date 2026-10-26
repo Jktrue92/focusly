@@ -57,7 +57,7 @@ export function AuthForm({
             </span>
           </label>
           <p>
-            Focusly is not intended for children under 13. Please do not create
+            Daylane is not intended for children under 13. Please do not create
             an account if you are under 13.
           </p>
         </div>
@@ -91,7 +91,7 @@ export function AuthForm({
       </div>
       <section className="auth-panel">
         <Link className="back-link" href="/">
-          ← Back to Focusly
+          ← Back to Daylane
         </Link>
         <div className="auth-card">
           <span className="eyebrow">YOUR WORKSPACE AWAITS</span>
@@ -114,7 +114,7 @@ export function AuthForm({
           )}
           {signup ? <SignupAgeGate>{form}</SignupAgeGate> : form}
           <p className="auth-switch">
-            {signup ? "Already have an account?" : "New to Focusly?"}{" "}
+            {signup ? "Already have an account?" : "New to Daylane?"}{" "}
             <Link href={signup ? "/login" : "/signup"}>
               {signup ? "Log in" : "Create an account"}
             </Link>

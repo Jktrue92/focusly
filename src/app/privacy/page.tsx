@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import { Brand } from "@/components/brand";
 export const metadata = {
-  title: "Privacy Policy & Children’s Privacy — Focusly",
+  title: "Privacy Policy & Children’s Privacy — Daylane",
 };
 export default function Privacy() {
   const contact =
@@ -16,7 +16,7 @@ export default function Privacy() {
       </header>
       <main>
         <Link className="text-link" href="/">
-          <ArrowLeft size={14} /> Back to Focusly
+          <ArrowLeft size={14} /> Back to Daylane
         </Link>
         <span className="recovery-icon">
           <ShieldCheck size={25} />
@@ -24,7 +24,7 @@ export default function Privacy() {
         <span className="eyebrow">YOUR SPACE. YOUR INFORMATION.</span>
         <h1>Privacy, in plain language.</h1>
         <p className="policy-intro">
-          How Focusly handles your information, and how we approach children’s
+          How Daylane handles your information, and how we approach children’s
           privacy.
         </p>
         <p className="policy-date">Effective October 26, 2026</p>
@@ -35,9 +35,9 @@ export default function Privacy() {
           </div>
         )}
         <section>
-          <h2>1. Who operates Focusly</h2>
+          <h2>1. Who operates Daylane</h2>
           <p>
-            Focusly is a student productivity service operated by {operator}.{" "}
+            Daylane is a student productivity service operated by {operator}.{" "}
             {contact ? (
               <>
                 For privacy requests, contact{" "}
@@ -118,7 +118,7 @@ export default function Privacy() {
         <section id="children">
           <h2>7. Children’s privacy and COPPA</h2>
           <p>
-            Focusly is intended for people aged 13 and older and is not directed
+            Daylane is intended for people aged 13 and older and is not directed
             to children under 13. Do not create an account if you are under 13.
             A neutral age-group screen blocks under-13 selections before asking
             for an email. A local browser flag keeps the signup screen blocked
@@ -133,13 +133,13 @@ export default function Privacy() {
             information, contact the operator without sending the child’s
             password or unnecessary identifying information. The operator should
             investigate, prevent further collection, and remove affected
-            information as appropriate. Focusly does not currently offer
+            information as appropriate. Daylane does not currently offer
             accounts for children under 13 or a parental-consent process.
           </p>
           <p>
             If applicable law requires parental permission for a user aged 13 or
             older, they should obtain that permission before using the service.
-            Schools should not deploy Focusly for under-13 students. These
+            Schools should not deploy Daylane for under-13 students. These
             safeguards do not constitute a certification of COPPA compliance;
             the operator must assess actual use and legal obligations before
             launch.
@@ -161,7 +161,7 @@ export default function Privacy() {
           </p>
         </section>
       </main>
-      <footer>Focusly · Less stress. More progress.</footer>
+      <footer>Daylane · Less stress. More progress.</footer>
     </div>
   );
 }

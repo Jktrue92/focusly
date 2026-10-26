@@ -52,7 +52,7 @@ export async function GET() {
     {
       headers: {
         ...privacyHeaders,
-        "Content-Disposition": 'attachment; filename="focusly-data.json"',
+        "Content-Disposition": 'attachment; filename="daylane-data.json"',
       },
     },
   );

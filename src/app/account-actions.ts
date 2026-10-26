@@ -24,7 +24,7 @@ export async function deleteAccount(form: FormData) {
     );
   const { error: deletionError } = await supabase.rpc("delete_own_account");
   if (deletionError) {
-    console.error("Focusly account deletion failed", {
+    console.error("Daylane account deletion failed", {
       code: deletionError.code,
     });
     redirect(

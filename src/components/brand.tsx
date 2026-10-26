@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Layers } from "lucide-react";
+import { DaylaneMark } from "./daylane-mark";
 export function Brand() {
   return (
-    <Link href="/" className="brand">
+    <Link href="/" className="brand" aria-label="Daylane home">
       <span className="brand-icon">
-        <Layers size={22} />
+        <DaylaneMark size={24} />
       </span>
-      focusly<span className="brand-dot">.</span>
+      <span>daylane</span>
     </Link>
   );
 }
