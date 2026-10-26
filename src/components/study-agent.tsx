@@ -1,4 +1,5 @@
 "use client";
+import { AI_CONSENT_VERSION, type AIProvider } from "@/lib/ai-contract";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ArrowLeft, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
@@ -11,9 +12,13 @@ const initial: AIStudyState = { message: "" };
 export function StudyAgent({
   decks,
   enabled,
+  providerLabel = "OpenAI",
+  providerId = "openai",
 }: {
   decks: StudyDeck[];
   enabled: boolean;
+  providerLabel?: string;
+  providerId?: AIProvider;
 }) {
   const [notes, setNotes] = useState("");
   const [state, action, pending] = useActionState(generateStudyDraft, initial);
@@ -41,17 +46,25 @@ export function StudyAgent({
         <div>
           <strong>Optional. Private to your workflow. Always review.</strong>
           <p>
-            Only the notes you submit here go to OpenAI—not your account email,
-            classes, or other sets. Daylane does not save the submitted notes.
-            OpenAI may process or retain them under its API policies. Do not
-            include names, student IDs, contact details, health information, or
-            other sensitive information. AI can make mistakes.
+            Only the notes you submit here go to {providerLabel}—not your
+            account email, classes, or other sets. Daylane does not save the
+            submitted notes.
+            {providerLabel} may process or retain them under its API policies.
+            Do not include names, student IDs, contact details, health
+            information, or other sensitive information. AI can make mistakes.
           </p>
           <Link href="/privacy">
             Read the Privacy Policy <ArrowRight size={12} />
           </Link>
         </div>
       </section>
+      {providerId === "cloudflare" && (
+        <p className="provider-free-note">
+          Cloudflare’s free tier has a shared daily allocation. Requests may
+          stop once it is used; there is no automatic fallback to a paid
+          provider.
+        </p>
+      )}
       {!enabled && (
         <div className="notice" role="status">
           The AI beta is not enabled on this deployment yet. No notes will be
@@ -60,6 +73,12 @@ export function StudyAgent({
       )}
       <section className="panel">
         <form action={action} className="editor-form ai-notes-form">
+          <input type="hidden" name="ai_provider" value={providerId} />
+          <input
+            type="hidden"
+            name="ai_consent_version"
+            value={AI_CONSENT_VERSION}
+          />
           <label>
             Your study notes
             <textarea
@@ -93,8 +112,8 @@ export function StudyAgent({
               disabled={!enabled || pending}
             />
             <span>
-              I am 13 or older and choose to send these notes to OpenAI to
-              generate this draft. I understand that I must check the output.
+              I am 13 or older and choose to send these notes to {providerLabel}{" "}
+              to generate this draft. I understand that I must check the output.
             </span>
           </label>
           <button

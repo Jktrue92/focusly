@@ -1,4 +1,5 @@
 "use client";
+import { AI_CONSENT_VERSION, type AIProvider } from "@/lib/ai-contract";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import {
@@ -312,9 +313,13 @@ function ScheduleReview({
 export function ScheduleImport({
   classes,
   enabled,
+  providerLabel = "OpenAI",
+  providerId = "openai",
 }: {
   classes: ClassRecord[];
   enabled: boolean;
+  providerLabel?: string;
+  providerId?: AIProvider;
 }) {
   const [state, action, pending] = useActionState(analyzeSchedule, {
     message: "",
@@ -341,17 +346,25 @@ export function ScheduleImport({
         <div>
           <strong>Your document. Your choice. Your final say.</strong>
           <p>
-            OpenAI receives the entire file you choose—not your other account
-            data. Redact names, student IDs, contact details, grades, and
-            sensitive information before uploading. Daylane does not save the
-            original file. OpenAI may process or retain it under its API
-            policies. Extracted entries can be wrong; review is required.
+            {providerLabel} receives the entire file you choose—not your other
+            account data. Redact names, student IDs, contact details, grades,
+            and sensitive information before uploading. Daylane does not save
+            the original file. {providerLabel} may process or retain it under
+            its API policies. Extracted entries can be wrong; review is
+            required.
           </p>
           <Link href="/privacy">
             Privacy details <ArrowRight size={12} />
           </Link>
         </div>
       </section>
+      {providerId === "cloudflare" && (
+        <p className="provider-free-note">
+          Cloudflare’s free tier has a shared daily allocation. Requests may
+          stop once it is used; there is no automatic fallback to a paid
+          provider.
+        </p>
+      )}
       {!enabled && (
         <p className="notice">
           AI import is not enabled on this deployment. No file will be sent. You
@@ -360,6 +373,12 @@ export function ScheduleImport({
       )}
       <section className="panel">
         <form action={action} className="editor-form">
+          <input type="hidden" name="ai_provider" value={providerId} />
+          <input
+            type="hidden"
+            name="ai_consent_version"
+            value={AI_CONSENT_VERSION}
+          />
           <label className="schedule-file-label">
             <FileUp size={27} />
             <strong>Choose your timetable or syllabus</strong>
@@ -409,8 +428,9 @@ export function ScheduleImport({
               disabled={!enabled || pending}
             />
             <span>
-              I am 13+ and choose to send this redacted document to OpenAI to
-              draft my schedule. I will review every proposed entry.
+              I am 13+ and choose to send this redacted document to{" "}
+              {providerLabel} to draft my schedule. I will review every proposed
+              entry.
             </span>
           </label>
           <button

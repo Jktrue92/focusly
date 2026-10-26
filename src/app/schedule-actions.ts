@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/data";
 import {
   aiConfigured,
+  aiModel,
+  aiProvider,
+  providerConsentMatches,
   aiFailureMessage,
   AIProviderError,
 } from "@/lib/study-ai";
@@ -29,10 +32,10 @@ export async function analyzeSchedule(
       message:
         "AI schedule import is not enabled yet. You can add meetings manually.",
     };
-  if (form.get("ai_consent") !== "on")
+  if (!providerConsentMatches(form))
     return {
       message:
-        "Confirm that you are 13+ and choose to send this file to OpenAI.",
+        "Reload this page and confirm the current AI provider and data-sharing choice before continuing.",
     };
   const start = String(form.get("term_start") ?? ""),
     end = String(form.get("term_end") ?? ""),
@@ -58,7 +61,9 @@ export async function analyzeSchedule(
       message:
         "Schedule import is not ready yet. You can continue with your existing workspace.",
     };
-  const quota = await supabase.rpc("claim_ai_request");
+  const quota = await supabase.rpc("claim_ai_request_for_provider", {
+    selected_provider: aiProvider(),
+  });
   if (quota.error)
     return { message: "AI import is not ready yet. Please try again later." };
   if (!quota.data)
@@ -81,8 +86,8 @@ export async function analyzeSchedule(
       start,
       end,
       timezone,
-      process.env.DAYLANE_AI_API_KEY!,
-      process.env.DAYLANE_AI_MODEL || "gpt-4.1-mini",
+      process.env.DAYLANE_AI_API_KEY!.trim(),
+      aiModel(),
     );
     return {
       message:

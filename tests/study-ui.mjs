@@ -20,7 +20,7 @@ const id='11111111-1111-4111-8111-111111111111';const deck={id,title:'Biology ·
 const cards=[['Cell','Basic unit of life.'],['DNA','Carries genetic information.'],['Mitochondria','Produces ATP.'],['Nucleus','Contains DNA.']].map(([term,definition],i)=>({id:'22222222-2222-4222-8222-22222222222'+i,deck_id:id,term,definition,source_excerpt:'',created_at:''}));const classes=[{id,name:'Physics',color:'#7065F0'}];
 const meetings=[{id:'m1',class_id:id,weekday:1,start_time:'09:00:00',end_time:'10:00:00',term_start:'2026-10-01',term_end:'2026-12-31',timezone:'America/New_York'}];
 window.__fixture=new URLSearchParams(location.search).get('fixture')||'session';
-const views={session:<StudySession deckId={id} title={deck.title} cards={cards}/>,small:<StudySession deckId={id} title={deck.title} cards={cards.slice(0,2)}/>,library:<StudyLibrary decks={[deck]} cards={cards} progress={[]} available/>,empty:<StudyLibrary decks={[]} cards={[]} progress={[]} available/>,editor:<DeckEditor deck={deck} cards={cards} progress={[]}/>,agent:<StudyAgent decks={[deck]} enabled/>,disabled:<StudyAgent decks={[deck]} enabled={false}/>,import:<ScheduleImport classes={classes} enabled/>,schedule:<ScheduleView classes={classes} meetings={meetings} available/>};
+const views={session:<StudySession deckId={id} title={deck.title} cards={cards}/>,small:<StudySession deckId={id} title={deck.title} cards={cards.slice(0,2)}/>,library:<StudyLibrary decks={[deck]} cards={cards} progress={[]} available/>,empty:<StudyLibrary decks={[]} cards={[]} progress={[]} available/>,editor:<DeckEditor deck={deck} cards={cards} progress={[]}/>,agent:<StudyAgent decks={[deck]} enabled/>,agentCf:<StudyAgent decks={[deck]} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,disabled:<StudyAgent decks={[deck]} enabled={false}/>,import:<ScheduleImport classes={classes} enabled/>,importCf:<ScheduleImport classes={classes} enabled providerLabel="Cloudflare Workers AI" providerId="cloudflare"/>,schedule:<ScheduleView classes={classes} meetings={meetings} available/>};
 createRoot(document.getElementById('root')).render(<div className="workspace"><aside className="sidebar"><Brand/><span className="nav-caption">YOUR WORKSPACE</span><WorkspaceNav/></aside><main className="workspace-main">{views[window.__fixture]}</main></div>);`;
 const scheduleDraft = {
   classes: [
@@ -231,15 +231,13 @@ try {
   await page.getByRole("alert").waitFor();
   assert.equal(await page.evaluate(() => window.__savedDraft.term_0), "Cell");
   await open("import");
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "schedule.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from(
-        "Physics Monday 09:00-10:00. Lab report due 2026-11-01.",
-      ),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "schedule.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(
+      "Physics Monday 09:00-10:00. Lab report due 2026-11-01.",
+    ),
+  });
   await page.getByLabel("Term starts", { exact: true }).fill("2026-10-01");
   await page.getByLabel("Term ends", { exact: true }).fill("2026-12-31");
   await page.getByRole("checkbox").check();
@@ -255,13 +253,36 @@ try {
     await page.evaluate(() => window.__savedSchedule.review_confirmed),
     "on",
   );
+  for (const fixture of ["agentCf", "importCf"]) {
+    await open(fixture);
+    const content = await page.locator(".workspace-main").innerText();
+    assert.equal(
+      content.includes("OpenAI"),
+      false,
+      "Provider notice must not name the wrong vendor",
+    );
+    assert.match(content, /Cloudflare Workers AI/);
+    assert.equal(
+      await page.locator('input[name="ai_provider"]').inputValue(),
+      "cloudflare",
+    );
+    assert.equal(
+      await page.locator('input[name="ai_consent_version"]').inputValue(),
+      "2026-10-26-provider-beta",
+    );
+    await page
+      .getByRole("checkbox", { name: /Cloudflare Workers AI/ })
+      .waitFor();
+  }
   for (const fixture of [
     "library",
     "empty",
     "editor",
     "session",
     "agent",
+    "agentCf",
     "import",
+    "importCf",
     "schedule",
   ])
     for (const width of [375, 768, 1440])

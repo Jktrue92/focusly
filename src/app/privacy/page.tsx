@@ -1,3 +1,4 @@
+import { aiProvider, aiProviderLabel } from "@/lib/ai-provider";
 import Link from "next/link";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -5,6 +6,11 @@ export const metadata = {
   title: "Privacy Policy & Children’s Privacy — Daylane",
 };
 export default function Privacy() {
+  const providerLabel = aiProviderLabel();
+  const providerDataURL =
+    aiProvider() === "cloudflare"
+      ? "https://developers.cloudflare.com/workers-ai/platform/data-usage/"
+      : "https://platform.openai.com/docs/guides/your-data";
   const contact =
     process.env.NEXT_PUBLIC_PRIVACY_EMAIL || "hellofocusly@gmail.com";
   const operator = process.env.NEXT_PUBLIC_OPERATOR_NAME || "Focusly Inc.";
@@ -93,24 +99,29 @@ export default function Privacy() {
           <h2>Optional AI study and schedule tools</h2>
           <p>
             When you explicitly opt in, the notes or entire schedule file you
-            submit are sent to OpenAI to draft study material or a timetable.
-            The app does not automatically include your account email, other
-            classes, or other study sets. Redact sensitive personal information,
-            student IDs, names and contact details before submitting. The
-            original notes and files are not saved to Daylane’s database;
-            selected excerpts are retained as part of flashcards only if you
-            choose to save them. Reviewed schedule entries are saved only after
-            you approve them.
+            submit are sent to {providerLabel} to draft study material or a
+            timetable. The app does not automatically include your account
+            email, other classes, or other study sets. Redact sensitive personal
+            information, student IDs, names and contact details before
+            submitting. The original notes and files are not saved to Daylane’s
+            database; selected excerpts are retained as part of flashcards only
+            if you choose to save them. Reviewed schedule entries are saved only
+            after you approve them.
           </p>
           <p>
-            AI results can be inaccurate. Provider processing and retention
-            depend on the API and provider settings; disabling response storage
-            does not mean zero provider retention. We store limited per-account
-            request counters and the most recent consent timestamp/version to
-            limit abuse and costs. Raw notes, uploaded files and provider
-            responses are not intentionally written to application logs. Do not
-            submit sensitive information. These tools are optional and only for
-            users aged 13 and older.
+            AI results can be inaccurate. The selected provider is shown before
+            each request; the operator may configure Cloudflare Workers AI or
+            OpenAI. There is no automatic fallback between providers. Provider
+            processing and retention depend on the API and provider settings;
+            disabling response storage does not mean zero provider retention. We
+            store limited per-account request counters and the most recent
+            consent timestamp/version to limit abuse and costs. Raw notes,
+            uploaded files and provider responses are not intentionally written
+            to application logs. Do not submit sensitive information. These
+            tools are optional and only for users aged 13 and older.{" "}
+            <a href={providerDataURL}>
+              Read the selected provider’s data policy.
+            </a>
           </p>
         </section>
         <section>

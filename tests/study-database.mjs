@@ -13,6 +13,7 @@ for (const file of [
   "202610260003_account_privacy.sql",
   "202610260004_study_tools.sql",
   "202610260005_schedule_import.sql",
+  "202610260006_ai_provider_consent.sql",
 ])
   await db.exec(
     await readFile(
@@ -294,6 +295,53 @@ assert.equal(ownUsage.consent_version, "2026-10-26-ai-beta");
 await db.exec("begin;set local role anon;");
 await assert.rejects(
   db.query("select public.get_own_ai_usage()"),
+  /permission denied/i,
+);
+await db.exec("rollback");
+assert.equal(
+  await asUser(
+    b,
+    async () =>
+      (
+        await db.query(
+          "select public.claim_ai_request_for_provider('cloudflare') as allowed",
+        )
+      ).rows[0].allowed,
+  ),
+  true,
+);
+assert.equal(
+  (
+    await asUser(
+      b,
+      async () =>
+        (await db.query("select public.get_own_ai_usage() as usage")).rows[0]
+          .usage,
+    )
+  ).consent_version,
+  "2026-10-26-provider-beta/cloudflare",
+);
+assert.equal(
+  await asUser(
+    b,
+    async () =>
+      (
+        await db.query(
+          "select public.claim_ai_request_for_provider('openai') as allowed",
+        )
+      ).rows[0].allowed,
+  ),
+  false,
+);
+await assert.rejects(
+  asUser(b, () =>
+    db.query("select public.claim_ai_request_for_provider('unknown')"),
+  ),
+  /Unsupported/,
+);
+await db.exec("begin;set local role anon;");
+await assert.rejects(
+  db.query("select public.claim_ai_request_for_provider('cloudflare')"),
   /permission denied/i,
 );
 await db.exec("rollback");

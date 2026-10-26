@@ -1,4 +1,3 @@
-import { AIProviderError, aiFailureMessage } from "../src/lib/study-ai.ts";
 import { readAll } from "../src/lib/read-all.ts";
 import assert from "node:assert/strict";
 import { build } from "esbuild";
@@ -12,28 +11,43 @@ import {
   shuffled,
 } from "../src/lib/study.ts";
 import {
-  validateStudyDraft,
-  generateStudyDraftFromProvider,
-} from "../src/lib/study-ai.ts";
-import {
   validateScheduleDraft,
   reviewedSchedule,
   validTerm,
   validDate,
   validTimezone,
 } from "../src/lib/schedule.ts";
+// Isolate provider fixtures from deployment selection; all network calls below are mocked.
+process.env.DAYLANE_AI_PROVIDER = "openai";
 await mkdir(".test-artifacts", { recursive: true });
 await build({
-  entryPoints: ["src/lib/schedule-ai.ts"],
+  stdin: {
+    contents:
+      "export * from './src/lib/study-ai';export * from './src/lib/schedule-ai';export * from './src/lib/ai-provider';",
+    loader: "ts",
+    resolveDir: process.cwd(),
+  },
   bundle: true,
   platform: "node",
   format: "cjs",
   packages: "external",
   outfile: ".test-artifacts/schedule-ai-test.cjs",
 });
-const { readScheduleAsset, extractScheduleFromProvider } = createRequire(
-  import.meta.url,
-)("../.test-artifacts/schedule-ai-test.cjs");
+const {
+  readScheduleAsset,
+  extractScheduleFromProvider,
+  validateStudyDraft,
+  generateStudyDraftFromProvider,
+  AIProviderError,
+  aiFailureMessage,
+  aiConfigured,
+  aiProvider,
+  AI_CONSENT_VERSION,
+  providerConsentMatches,
+  cloudflareStructured,
+  cloudflareDocumentText,
+  AIDocumentError,
+} = createRequire(import.meta.url)("../.test-artifacts/schedule-ai-test.cjs");
 const cards = [
   { id: "1", term: "Cell", definition: "Basic unit of life." },
   { id: "2", term: "DNA", definition: "Carries genetic information." },
@@ -356,3 +370,163 @@ assert.equal(
 console.log(
   "PASS: provider configuration/billing errors are actionable without exposing raw responses.",
 );
+
+const settingNames = [
+  "DAYLANE_AI_PROVIDER",
+  "DAYLANE_AI_ACCOUNT_ID",
+  "DAYLANE_AI_API_KEY",
+  "DAYLANE_AI_ENABLED",
+  "DAYLANE_AI_MODEL",
+];
+const previousSettings = Object.fromEntries(
+  settingNames.map((name) => [name, process.env[name]]),
+);
+try {
+  process.env.DAYLANE_AI_PROVIDER = "cloudflare";
+  process.env.DAYLANE_AI_ACCOUNT_ID = "a".repeat(32);
+  process.env.DAYLANE_AI_API_KEY = " test-token ";
+  process.env.DAYLANE_AI_ENABLED = " true ";
+  process.env.DAYLANE_AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+  assert.equal(aiConfigured(), true);
+  assert.equal(aiProvider(), "cloudflare");
+  const consent = new FormData();
+  consent.set("ai_consent", "on");
+  consent.set("ai_provider", "openai");
+  consent.set("ai_consent_version", AI_CONSENT_VERSION);
+  assert.equal(providerConsentMatches(consent), false);
+  consent.set("ai_provider", "cloudflare");
+  assert.equal(providerConsentMatches(consent), true);
+  consent.set("ai_consent_version", "old");
+  assert.equal(providerConsentMatches(consent), false);
+  let cfCalls = 0;
+  const cfMock = async (url, init) => {
+    cfCalls++;
+    assert.match(
+      url,
+      /^https:\/\/api\.cloudflare\.com\/client\/v4\/accounts\/a{32}\/ai\/run\/@cf\/meta\//,
+    );
+    assert.equal(init.headers.Authorization, "Bearer test-token");
+    const body = JSON.parse(init.body);
+    assert.equal(body.response_format.type, "json_schema");
+    assert.equal(body.response_format.json_schema.type, "object");
+    assert.equal(body.stream, false);
+    return new Response(
+      JSON.stringify({ success: true, result: { response: draft } }),
+    );
+  };
+  assert.deepEqual(
+    await generateStudyDraftFromProvider(
+      notes,
+      5,
+      " test-token ",
+      process.env.DAYLANE_AI_MODEL,
+      cfMock,
+      "cloudflare",
+    ),
+    draft,
+  );
+  assert.equal(cfCalls, 1);
+  assert.match(aiFailureMessage(new AIProviderError(429)), /free daily/);
+  await assert.rejects(
+    cloudflareStructured(
+      [],
+      {},
+      "test-token",
+      "unsupported-model",
+      100,
+      cfMock,
+    ),
+    /unavailable/,
+  );
+  assert.equal(cfCalls, 1);
+  let stages = 0;
+  const cfSchedule = async (url, init) => {
+    stages++;
+    assert.match(url, /^https:\/\/api\.cloudflare\.com\//);
+    if (url.endsWith("/tomarkdown")) {
+      const file = init.body.get("files");
+      assert.equal(file.name, "schedule.pdf");
+      assert.equal(file.type, "application/pdf");
+      assert.equal(init.headers["Content-Type"], undefined);
+      return new Response(
+        JSON.stringify({
+          success: true,
+          result: [{ format: "markdown", data: text }],
+        }),
+      );
+    }
+    const body = JSON.parse(init.body);
+    assert.equal(JSON.parse(body.messages[1].content).document, text);
+    return new Response(
+      JSON.stringify({
+        success: true,
+        result: { response: JSON.stringify(schedule) },
+      }),
+    );
+  };
+  assert.deepEqual(
+    await extractScheduleFromProvider(
+      {
+        kind: "pdf",
+        mime: "application/pdf",
+        base64: Buffer.from("%PDF-test").toString("base64"),
+      },
+      "2026-10-01",
+      "2026-12-31",
+      "UTC",
+      "test-token",
+      process.env.DAYLANE_AI_MODEL,
+      cfSchedule,
+      "cloudflare",
+    ),
+    schedule,
+  );
+  assert.equal(stages, 2);
+  await assert.rejects(
+    cloudflareDocumentText(
+      { mime: "image/png", base64: "AA==" },
+      "test-token",
+      async () =>
+        new Response(
+          JSON.stringify({ success: true, result: [{ format: "error" }] }),
+        ),
+    ),
+    AIDocumentError,
+  );
+  await assert.rejects(
+    cloudflareDocumentText(
+      { mime: "image/png", base64: "AA==" },
+      "test-token",
+      async () =>
+        new Response(
+          JSON.stringify({
+            success: true,
+            result: [{ format: "markdown", data: "x".repeat(12001) }],
+          }),
+        ),
+    ),
+    AIDocumentError,
+  );
+  await assert.rejects(
+    cloudflareStructured(
+      [],
+      {},
+      "test-token",
+      process.env.DAYLANE_AI_MODEL,
+      100,
+      async () => new Response("{}", { status: 429 }),
+    ),
+    /unavailable/,
+  );
+  process.env.DAYLANE_AI_PROVIDER = "unknown";
+  assert.equal(aiProvider(), null);
+  assert.equal(aiConfigured(), false);
+  console.log(
+    "PASS: Cloudflare contracts, free-tier errors, model restrictions, provider-bound consent, PDF/image conversion, no silent source truncation, and no paid-provider fallback. All provider calls mocked.",
+  );
+} finally {
+  for (const name of settingNames) {
+    if (previousSettings[name] === undefined) delete process.env[name];
+    else process.env[name] = previousSettings[name];
+  }
+}

@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/data";
 import {
   aiConfigured,
+  aiModel,
+  aiProvider,
+  providerConsentMatches,
   aiFailureMessage,
   AIProviderError,
   generateStudyDraftFromProvider,
@@ -19,10 +22,10 @@ export async function generateStudyDraft(
       message:
         "The AI beta is not enabled yet. You can still make and study your own flashcards.",
     };
-  if (form.get("ai_consent") !== "on")
+  if (!providerConsentMatches(form))
     return {
       message:
-        "Confirm that you are 13+ and choose to send these notes to OpenAI before continuing.",
+        "Reload this page and confirm the current AI provider and data-sharing choice before continuing.",
     };
   const notes = String(form.get("notes") ?? "").trim();
   const count = Number(form.get("count"));
@@ -31,7 +34,9 @@ export async function generateStudyDraft(
       message:
         "Paste 100 to 12,000 characters of your own study notes and choose 5 or 10 cards.",
     };
-  const quota = await supabase.rpc("claim_ai_request");
+  const quota = await supabase.rpc("claim_ai_request_for_provider", {
+    selected_provider: aiProvider(),
+  });
   if (quota.error)
     return {
       message: "The AI study tools are not ready yet. Please try again later.",
@@ -45,8 +50,8 @@ export async function generateStudyDraft(
     const draft = await generateStudyDraftFromProvider(
       notes,
       count,
-      process.env.DAYLANE_AI_API_KEY!,
-      process.env.DAYLANE_AI_MODEL || "gpt-4.1-mini",
+      process.env.DAYLANE_AI_API_KEY!.trim(),
+      aiModel(),
     );
     return {
       message:

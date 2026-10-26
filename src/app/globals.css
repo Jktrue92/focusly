@@ -5208,3 +5208,18 @@ html[data-theme="dark"] .course-meetings > a {
     width: 17px;
   }
 }
+.provider-free-note {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #786684;
+  background: #f5f1fb;
+  border: 1px solid #e5ddf0;
+  border-radius: 9px;
+  padding: 13px 17px;
+  margin: 0 0 22px;
+}
+html[data-theme="dark"] .provider-free-note {
+  color: #bfb0d0;
+  background: #282035;
+  border-color: #41304f;
+}
