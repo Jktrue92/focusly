@@ -2587,3 +2587,471 @@ summary {
     animation: none;
   }
 }
+/* Color theme preference is local to this browser, with system appearance as default. */
+.theme-switcher {
+  position: fixed;
+  bottom: 20px;
+  right: 22px;
+  z-index: 40;
+  display: flex;
+  gap: 3px;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #dfddea;
+  border-radius: 12px;
+  background: #fffffff5;
+  box-shadow: 0 4px 20px #1018270d;
+  backdrop-filter: blur(12px);
+}
+.theme-switcher button {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 30px;
+  padding: 0;
+  border-radius: 7px;
+  color: #848198;
+  background: transparent;
+}
+.theme-switcher button:hover {
+  background: #f0edf8;
+}
+.theme-switcher button[aria-pressed="true"] {
+  background: #ece8ff;
+  color: #7065d6;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.dashboard-footer {
+  padding-bottom: 65px;
+}
+.policy-page footer {
+  padding-bottom: 85px;
+}
+.data-controls p {
+  font-size: 12px;
+  color: #7e8498;
+}
+.data-controls > .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.account-delete {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.account-delete > summary {
+  color: #a56378;
+  font-size: 12px;
+}
+.account-delete form {
+  display: grid;
+  gap: 17px;
+  margin-top: 12px;
+}
+.account-delete .danger-button {
+  justify-self: start;
+  padding: 12px 17px;
+}
+.settings-panel:last-of-type {
+  margin-bottom: 25px;
+}
+html[data-theme="dark"] {
+  --navy: #e3e8f6;
+  --paper: #0e1422;
+  --muted: #a3adc3;
+  --border: #293247;
+  --purple: #a196ff;
+  --lavender: #b0a6ff;
+  color-scheme: dark;
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .workspace {
+  background: #0e1422;
+  color: #e3e8f6;
+}
+html[data-theme="dark"]
+  :is(
+    .sidebar,
+    .panel,
+    .dashboard-card,
+    .overview-stat,
+    .feature-grid article,
+    .recovery-card,
+    .preview,
+    .floating-badge,
+    .floating-progress,
+    .planning-picker form
+  ) {
+  background: #161e2f;
+  border-color: #2a3349;
+  box-shadow: 0 5px 20px #0000000c;
+}
+html[data-theme="dark"] :is(.landing, .auth-page, .policy-page) {
+  background: #101725;
+}
+html[data-theme="dark"] :is(.brand, .mini-logo) {
+  color: #e9edfa;
+}
+html[data-theme="dark"] .brand-icon {
+  background: #7c6bec;
+  color: #fff;
+}
+html[data-theme="dark"] .brand-dot {
+  color: #a69bff;
+}
+html[data-theme="dark"] :is(.button, .dashboard-welcome > .button) {
+  background: #8170ed;
+  color: #fff;
+}
+html[data-theme="dark"] .button:hover {
+  background: #9282f6;
+}
+html[data-theme="dark"]
+  :is(h1, h2, h3, .page-heading h1, .auth-card h2, .recovery-card h1) {
+  color: #e6ebf8;
+}
+html[data-theme="dark"]
+  :is(
+    .eyebrow,
+    .hero h1 span,
+    .auth-story h1 span,
+    .text-link,
+    .auth-switch a,
+    .forgot-link,
+    .checkbox-label a,
+    .auth-policy-link,
+    .back-to-login,
+    .settings-privacy
+  ) {
+  color: #b0a4ff;
+}
+html[data-theme="dark"]
+  :is(
+    .muted,
+    .hero-copy > p,
+    .features > p,
+    .feature-grid p,
+    .auth-card > p,
+    .recovery-card > p,
+    .page-heading p,
+    .dashboard-welcome p,
+    .dashboard-topline,
+    .overview-stat > div,
+    .overview-stat small,
+    .card-eyebrow,
+    .progress-card > p,
+    .progress-card > p > strong,
+    .completion-ring > div > span,
+    .quiet-note p,
+    .quiet-note strong,
+    .sidebar nav a,
+    .class-empty p,
+    .class-empty h3,
+    .assignment-row time,
+    .date-form label,
+    .public-nav nav > a:first-child,
+    .public-nav nav > a,
+    .privacy-note,
+    .signup-eligibility > p,
+    .checkbox-label,
+    .data-controls p
+  ) {
+  color: #a5afc5;
+}
+html[data-theme="dark"] :is(input, select) {
+  background: #101827;
+  border-color: #34405a;
+  color: #e3e8f6;
+}
+html[data-theme="dark"] :is(input, select)::placeholder {
+  color: #8b97af;
+}
+html[data-theme="dark"] label {
+  color: #b9c2d7;
+}
+html[data-theme="dark"] :is(.sidebar nav a:hover, .sidebar nav .nav-active) {
+  background: #292443;
+  color: #c1b7ff;
+  box-shadow: inset 3px 0 #a294ff;
+}
+html[data-theme="dark"] .nav-caption {
+  color: #8996b2;
+}
+html[data-theme="dark"]
+  :is(
+    .dashboard-topline,
+    .dashboard-footer,
+    .policy-page > header,
+    .policy-page section,
+    .policy-page footer,
+    .landing footer,
+    .assignment-item,
+    .progress-caption,
+    .course-tile,
+    .class-mini,
+    .week-strip,
+    .preview-top,
+    .preview-task,
+    .trust-strip
+  ) {
+  border-color: #2b3449;
+}
+html[data-theme="dark"] .overview-stat strong {
+  color: #edf0fa;
+}
+html[data-theme="dark"] .overview-stat.purple strong {
+  color: #b5aaff;
+}
+html[data-theme="dark"] .focus-banner {
+  background: #211d3d;
+  border: 1px solid #3c3260;
+}
+html[data-theme="dark"] .focus-banner h2 {
+  color: #f4f0ff;
+}
+html[data-theme="dark"] .focus-banner p {
+  color: #c0bad4;
+}
+html[data-theme="dark"]
+  :is(
+    .count-badge,
+    .pill,
+    .secondary-button,
+    .notice,
+    .feature-icon,
+    .recovery-icon,
+    .encouragement,
+    .progress-panel
+  ) {
+  background: #292443;
+  border-color: #40335d;
+  color: #baafff;
+}
+html[data-theme="dark"] .encouragement p {
+  color: #b7abdf;
+}
+html[data-theme="dark"]
+  :is(
+    .week-strip > a > span,
+    .week-strip > a > strong,
+    .planning-picker > summary
+  ) {
+  color: #aeb7cc;
+}
+html[data-theme="dark"] .week-strip > a:hover:not(.selected) {
+  background: #24263e;
+}
+html[data-theme="dark"] .week-strip > a.selected {
+  background: #8170ed;
+  color: #fff;
+}
+html[data-theme="dark"] .week-strip > a.selected strong {
+  color: #fff;
+}
+html[data-theme="dark"] .completion-ring > div {
+  background: #161e2f;
+}
+html[data-theme="dark"] .completion-ring strong {
+  color: #e8e8fa;
+}
+html[data-theme="dark"] .completion-ring strong > small {
+  color: #b0a4e7;
+}
+html[data-theme="dark"] .completion-ring {
+  box-shadow: 0 0 0 1px #34334a;
+}
+html[data-theme="dark"] .dashboard-card .empty :is(h3, p),
+html[data-theme="dark"] .empty {
+  color: #a9acc4;
+}
+html[data-theme="dark"] .check-button {
+  color: #a59abb;
+}
+html[data-theme="dark"] .check-button.checked {
+  color: #bcafff;
+}
+html[data-theme="dark"] .priority {
+  background: #2c2a40;
+  color: #c1b7d4;
+}
+html[data-theme="dark"] .priority.high {
+  background: #3a2633;
+  color: #f0aeb6;
+}
+html[data-theme="dark"] .priority.medium,
+html[data-theme="dark"] .overdue-note {
+  background: #362e25;
+  color: #e3c59a;
+}
+html[data-theme="dark"] .priority.low {
+  background: #20362f;
+  color: #a6d2bb;
+}
+html[data-theme="dark"] :is(.round-link, .planning-picker > summary) {
+  border-color: #3a3c54;
+  color: #b4a9d2;
+}
+html[data-theme="dark"] .course-tile strong {
+  color: #d4daea;
+}
+html[data-theme="dark"] .course-tile small {
+  color: #a1abc3;
+}
+html[data-theme="dark"] .quiet-note > span {
+  color: #b7a5dc;
+}
+html[data-theme="dark"] .dashboard-footer,
+html[data-theme="dark"] .dashboard-footer a {
+  color: #99a6c1;
+}
+html[data-theme="dark"] .auth-story {
+  background: #221f38;
+}
+html[data-theme="dark"] :is(.auth-story p, .auth-story small) {
+  color: #b3a9cb;
+}
+html[data-theme="dark"] .recovery-page {
+  background:
+    radial-gradient(ellipse at top, #28203f, transparent 65%), #0e1422;
+}
+html[data-theme="dark"]
+  :is(
+    .policy-intro,
+    .policy-page section p,
+    .policy-date,
+    .policy-page footer
+  ) {
+  color: #a5afc2;
+}
+html[data-theme="dark"] .policy-page section h2 {
+  color: #dcd7ed;
+}
+html[data-theme="dark"] .policy-page section a {
+  color: #b6a8ff;
+}
+html[data-theme="dark"] :is(.bottom-cta, .trust-strip) {
+  background: #191c30;
+  border-color: #30304a;
+}
+html[data-theme="dark"] .hero-art {
+  background: radial-gradient(
+    ellipse,
+    #2d254c 0%,
+    #1b1b30 50%,
+    transparent 72%
+  );
+}
+html[data-theme="dark"] .orbit {
+  border-color: #3a3156;
+}
+html[data-theme="dark"] .preview-stats {
+  background: #22283b;
+}
+html[data-theme="dark"] .preview-label span,
+html[data-theme="dark"] .preview-task time,
+html[data-theme="dark"] .preview-stats span {
+  color: #acb4ca;
+}
+html[data-theme="dark"] .hero-note {
+  color: #a4aec5;
+}
+html[data-theme="dark"] .hero-note strong {
+  color: #b9c0d2;
+}
+html[data-theme="dark"] .avatar-stack i {
+  border-color: #101725;
+  background: #4d405d;
+  color: #d9caed;
+}
+html[data-theme="dark"] .avatar-stack i:nth-child(2) {
+  background: #5a483a;
+  color: #eedaca;
+}
+html[data-theme="dark"] .avatar-stack i:nth-child(3) {
+  background: #324e45;
+  color: #c2e2d7;
+}
+html[data-theme="dark"] .danger-button {
+  background: #3b2634;
+  color: #f3b6c5;
+}
+html[data-theme="dark"] .theme-switcher {
+  background: #1a2133ed;
+  border-color: #3a3b55;
+  box-shadow: 0 5px 20px #0003;
+}
+html[data-theme="dark"] .theme-switcher button {
+  color: #a8b0c9;
+}
+html[data-theme="dark"] .theme-switcher button:hover {
+  background: #292b45;
+}
+html[data-theme="dark"] .theme-switcher button[aria-pressed="true"] {
+  background: #3b315e;
+  color: #d0c4ff;
+}
+@media (max-width: 760px) {
+  .theme-switcher {
+    bottom: 13px;
+    right: 14px;
+    padding: 4px;
+  }
+  .theme-switcher button {
+    width: 29px;
+    height: 28px;
+  }
+  .sidebar nav .nav-active {
+    box-shadow: none;
+  }
+}
+.age-gate {
+  border: 1px solid #e9e5f2;
+  border-radius: 11px;
+  padding: 22px;
+  margin-top: 25px;
+  background: #faf9fd;
+}
+.age-gate h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.age-gate p {
+  font-size: 12px;
+  color: #7e8295;
+  line-height: 1.8;
+}
+.age-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+.age-options .secondary-button {
+  font-size: 12px;
+}
+.age-gate > a {
+  font-size: 11px;
+  color: #8170c5;
+}
+html[data-theme="dark"] .age-gate {
+  background: #1a2033;
+  border-color: #363149;
+}
+html[data-theme="dark"] .age-gate p {
+  color: #aab3ca;
+}
+html[data-theme="dark"] .age-gate > a {
+  color: #b7a5fa;
+}

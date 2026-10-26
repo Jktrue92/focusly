@@ -5,7 +5,8 @@ export const metadata = {
   title: "Privacy Policy & Children’s Privacy — Focusly",
 };
 export default function Privacy() {
-  const contact = process.env.NEXT_PUBLIC_PRIVACY_EMAIL || "hellofocusly@gmail.com";
+  const contact =
+    process.env.NEXT_PUBLIC_PRIVACY_EMAIL || "hellofocusly@gmail.com";
   const operator = process.env.NEXT_PUBLIC_OPERATOR_NAME || "Focusly Inc.";
   return (
     <div className="policy-page">
@@ -90,10 +91,13 @@ export default function Privacy() {
           <h2>5. Cookies and security</h2>
           <p>
             Essential authentication cookies keep you signed in and support
-            account recovery. Access to workspace records is restricted through
-            authentication and database ownership policies. No system can
-            guarantee absolute security. Signing out ends the app session; you
-            may also clear site data in your browser.
+            account recovery. Your light, dark, or system appearance preference
+            and an under-13 signup-block flag (when applicable) are stored
+            locally in your browser and are not used for tracking. Access to
+            workspace records is restricted through authentication and database
+            ownership policies. No system can guarantee absolute security.
+            Signing out ends the app session; you may also clear site data in
+            your browser.
           </p>
         </section>
         <section>
@@ -101,12 +105,14 @@ export default function Privacy() {
           <p>
             Your account and workspace are retained while needed to provide the
             service. You can edit or delete classes and assignments in the app.
-            You may request a copy, correction, or deletion of your account
-            information through the privacy contact. Account deletion is
-            currently handled by the operator, not an automated in-app control.
-            Backups and security logs may remain according to provider retention
-            settings and legal obligations; we do not promise immediate removal
-            from every backup.
+            You can download a copy of your account and workspace and
+            permanently delete your account in Account settings. You may also
+            request a copy, correction, or deletion of your account information
+            through the privacy contact. Account deletion removes live account
+            and workspace records; providers may retain backups and security
+            logs separately. Backups and security logs may remain according to
+            provider retention settings and legal obligations; we do not promise
+            immediate removal from every backup.
           </p>
         </section>
         <section id="children">
@@ -114,10 +120,12 @@ export default function Privacy() {
           <p>
             Focusly is intended for people aged 13 and older and is not directed
             to children under 13. Do not create an account if you are under 13.
-            Signup requires an age-eligibility attestation before account
-            creation; we do not ask for a birth date. This is an eligibility
-            declaration, not verified age assurance or verifiable parental
-            consent.
+            A neutral age-group screen blocks under-13 selections before asking
+            for an email. A local browser flag keeps the signup screen blocked
+            in that browser. Signup also requires an age-eligibility attestation
+            before account creation; we do not ask for a birth date. This is an
+            eligibility declaration, not verified age assurance or verifiable
+            parental consent.
           </p>
           <p>
             We do not knowingly collect personal information from children under

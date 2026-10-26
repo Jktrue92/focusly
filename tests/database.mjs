@@ -201,4 +201,73 @@ await db.query(
 console.log(
   "PASS: database rejects absent/under-13 attestations and missing policy acknowledgements; eligible signup succeeds.",
 );
+await db.exec(
+  await readFile(
+    new URL(
+      "../supabase/migrations/202610260003_account_privacy.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  ),
+);
+const charlie = "33333333-3333-4333-8333-333333333333";
+await db.query("insert into auth.users(id,raw_user_meta_data) values ($1,$2)", [
+  charlie,
+  JSON.stringify({
+    age_13_or_older: true,
+    privacy_policy_version: "2026-10-26",
+  }),
+]);
+await asUser(bob, async () => {
+  const course = (
+    await db.query(
+      "insert into public.classes(name) values ('Bob private class') returning id",
+    )
+  ).rows[0].id;
+  await db.query(
+    "insert into public.assignments(title,due_date,class_id) values ('Bob task','2026-11-01',$1)",
+    [course],
+  );
+});
+await asUser(charlie, () =>
+  db.query("insert into public.classes(name) values ('Charlie private class')"),
+);
+await db.exec("begin; set local role anon;");
+await assert.rejects(
+  db.query("select public.delete_own_account()"),
+  /permission denied/i,
+);
+await db.exec("rollback");
+await assert.rejects(
+  asUser("", () => db.query("select public.delete_own_account()")),
+  /Authentication required/,
+);
+await asUser(bob, () => db.query("select public.delete_own_account()"));
+assert.equal(
+  (await db.query("select id from auth.users where id=$1", [bob])).rows.length,
+  0,
+);
+assert.equal(
+  (await db.query("select id from public.classes where user_id=$1", [bob])).rows
+    .length,
+  0,
+);
+assert.equal(
+  (await db.query("select id from public.assignments where user_id=$1", [bob]))
+    .rows.length,
+  0,
+);
+assert.equal(
+  (await db.query("select id from auth.users where id=$1", [charlie])).rows
+    .length,
+  1,
+);
+assert.equal(
+  (await db.query("select id from public.classes where user_id=$1", [charlie]))
+    .rows.length,
+  1,
+);
+console.log(
+  "PASS: anonymous/missing-identity deletion denied; self-deletion cascades only caller records and preserves another account.",
+);
 await db.close();

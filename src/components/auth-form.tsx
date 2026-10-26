@@ -1,3 +1,4 @@
+import { SignupAgeGate } from "./signup-age-gate";
 import { SubmitButton } from "./submit-button";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
@@ -11,6 +12,64 @@ export function AuthForm({
   signup?: boolean;
   message?: string;
 }) {
+  const form = (
+    <form action={authenticate}>
+      <input type="hidden" name="mode" value={signup ? "signup" : "login"} />
+      <label>
+        Email address
+        <input
+          type="email"
+          name="email"
+          placeholder="you@university.edu"
+          required
+          maxLength={254}
+          autoComplete="email"
+        />
+      </label>
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          placeholder="At least 8 characters"
+          minLength={8}
+          maxLength={128}
+          required
+          autoComplete={signup ? "new-password" : "current-password"}
+        />
+      </label>
+      {!signup && (
+        <Link href="/forgot-password" className="forgot-link">
+          Forgot password?
+        </Link>
+      )}
+      {signup && (
+        <div className="signup-eligibility">
+          <label className="checkbox-label">
+            <input type="checkbox" name="age_confirmed" required /> I am 13
+            years old or older.
+          </label>
+          <label className="checkbox-label">
+            <input type="checkbox" name="privacy_acknowledged" required />
+            <span>
+              I have read the <Link href="/privacy">Privacy Policy</Link>,
+              including children’s privacy.
+            </span>
+          </label>
+          <p>
+            Focusly is not intended for children under 13. Please do not create
+            an account if you are under 13.
+          </p>
+        </div>
+      )}
+      <SubmitButton
+        disabled={!isConfigured()}
+        pendingLabel={signup ? "Creating account…" : "Logging in…"}
+      >
+        {signup ? "Create account" : "Log in"}
+      </SubmitButton>
+    </form>
+  );
   return (
     <main className="auth-page">
       <div className="auth-story">
@@ -53,66 +112,7 @@ export function AuthForm({
               {message}
             </div>
           )}
-          <form action={authenticate}>
-            <input
-              type="hidden"
-              name="mode"
-              value={signup ? "signup" : "login"}
-            />
-            <label>
-              Email address
-              <input
-                type="email"
-                name="email"
-                placeholder="you@university.edu"
-                required
-                maxLength={254}
-                autoComplete="email"
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                name="password"
-                placeholder="At least 8 characters"
-                minLength={8}
-                maxLength={128}
-                required
-                autoComplete={signup ? "new-password" : "current-password"}
-              />
-            </label>
-            {!signup && (
-              <Link href="/forgot-password" className="forgot-link">
-                Forgot password?
-              </Link>
-            )}
-            {signup && (
-              <div className="signup-eligibility">
-                <label className="checkbox-label">
-                  <input type="checkbox" name="age_confirmed" required /> I am
-                  13 years old or older.
-                </label>
-                <label className="checkbox-label">
-                  <input type="checkbox" name="privacy_acknowledged" required />
-                  <span>
-                    I have read the <Link href="/privacy">Privacy Policy</Link>,
-                    including children’s privacy.
-                  </span>
-                </label>
-                <p>
-                  Focusly is not intended for children under 13. Please do not
-                  create an account if you are under 13.
-                </p>
-              </div>
-            )}
-            <SubmitButton
-              disabled={!isConfigured()}
-              pendingLabel={signup ? "Creating account…" : "Logging in…"}
-            >
-              {signup ? "Create account" : "Log in"}
-            </SubmitButton>
-          </form>
+          {signup ? <SignupAgeGate>{form}</SignupAgeGate> : form}
           <p className="auth-switch">
             {signup ? "Already have an account?" : "New to Focusly?"}{" "}
             <Link href={signup ? "/login" : "/signup"}>

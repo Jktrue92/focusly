@@ -12,7 +12,8 @@
     "test:smoke": "node tests/smoke.mjs",
     "test:auth": "node tests/auth-errors.mjs",
     "test:visual": "node tests/dashboard-visual.mjs",
-    "test:recovery": "node tests/recovery-smoke.mjs"
+    "test:recovery": "node tests/recovery-smoke.mjs",
+    "test:privacy": "node tests/privacy-theme.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

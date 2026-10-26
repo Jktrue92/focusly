@@ -58,33 +58,41 @@ const browser = await chromium.launch({
 try {
   const page = await browser.newPage();
   for (const fixture of ["populated", "empty"])
-    for (const width of [375, 768, 1440]) {
-      await page.setViewportSize({ width, height: 1050 });
-      await page.setContent(
-        await readFile(path.join(output, fixture + ".html"), "utf8"),
-      );
-      await page.addStyleTag({ content: css });
-      await page.getByRole("heading", { name: "Today’s focus" }).waitFor();
-      if (
+    for (const width of [375, 768, 1440])
+      for (const theme of ["light", "dark"]) {
+        await page.setViewportSize({ width, height: 1050 });
+        await page.setContent(
+          await readFile(path.join(output, fixture + ".html"), "utf8"),
+        );
+        await page.addStyleTag({ content: css });
         await page.evaluate(
-          () => document.documentElement.scrollWidth > innerWidth + 1,
+          (theme) => (document.documentElement.dataset.theme = theme),
+          theme,
+        );
+        await page.getByRole("heading", { name: "Today’s focus" }).waitFor();
+        if (
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth + 1,
+          )
         )
-      )
-        throw Error("Dashboard overflow: " + fixture + " at " + width);
-      if (
-        fixture === "populated" &&
-        (await page
-          .locator(".overview-stat strong")
-          .allTextContents()
-          .then((values) => values.join(","))) !== "02,01,03,03"
-      )
-        throw Error("Incorrect task summaries");
-      await page.waitForTimeout(250);
-      await page.screenshot({
-        path: path.join(output, "dashboard-" + fixture + "-" + width + ".png"),
-        fullPage: true,
-      });
-    }
+          throw Error("Dashboard overflow: " + fixture + " at " + width);
+        if (
+          fixture === "populated" &&
+          (await page
+            .locator(".overview-stat strong")
+            .allTextContents()
+            .then((values) => values.join(","))) !== "02,01,03,03"
+        )
+          throw Error("Incorrect task summaries");
+        await page.waitForTimeout(250);
+        await page.screenshot({
+          path: path.join(
+            output,
+            "dashboard-" + fixture + "-" + width + "-" + theme + ".png",
+          ),
+          fullPage: true,
+        });
+      }
   console.log(
     "PASS: real dashboard component, populated/empty fixtures, summary counts and no overflow at 375/768/1440px. Server mutations are stubbed only in this isolated test.",
   );

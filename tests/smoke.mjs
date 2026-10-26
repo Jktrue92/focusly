@@ -15,6 +15,7 @@ import { chromium } from "playwright-core";
   await page
     .getByRole("heading", { name: "Make room for progress." })
     .waitFor();
+  await page.getByRole("button", { name: "13 or older" }).click();
   if (
     !(await page.getByRole("button", { name: "Create account" }).isDisabled())
   )

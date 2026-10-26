@@ -11,9 +11,13 @@ try {
   await page.goto("http://127.0.0.1:3000/login", { waitUntil: "networkidle" });
   await page.getByRole("link", { name: "Forgot password?" }).click();
   await page.getByRole("heading", { name: "Forgot your password?" }).waitFor();
-  await page.getByRole("textbox", { name: "Email address" }).fill("not-an-email");
+  await page
+    .getByRole("textbox", { name: "Email address" })
+    .fill("not-an-email");
   assert.equal(
-    await page.getByRole("textbox", { name: "Email address" }).evaluate((e) => e.checkValidity()),
+    await page
+      .getByRole("textbox", { name: "Email address" })
+      .evaluate((e) => e.checkValidity()),
     false,
   );
   await page.goto("http://127.0.0.1:3000/reset-password", {
@@ -30,11 +34,14 @@ try {
   });
   assert.equal(new URL(page.url()).pathname, "/forgot-password");
   await page.goto("http://127.0.0.1:3000/signup", { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "13 or older" }).click();
   assert.equal(await page.getByRole("checkbox").count(), 2);
   for (const box of await page.getByRole("checkbox").all())
     assert.equal((await box.getAttribute("required")) !== null, true);
   // Deliberately bypass native validation; the server must reject an unchecked age gate.
-  await page.getByRole("textbox", { name: "Email address" }).fill("eligibility-test@example.com");
+  await page
+    .getByRole("textbox", { name: "Email address" })
+    .fill("eligibility-test@example.com");
   await page
     .locator('input[name="password"]:visible')
     .fill("NeverSubmittedToSupabase123!");
