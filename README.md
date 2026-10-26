@@ -87,3 +87,11 @@ New signups now pass a neutral age-group screen before email inputs. Choosing Un
 Account settings provide a private JSON export and password-confirmed self-service account deletion. Apply `supabase/migrations/202610260003_account_privacy.sql` after the eligibility migration to enable deletion. No privileged Supabase key is used in the app. The function deletes only `auth.uid()` and cascades that account's workspace. Provider backups and logs expire separately under documented operator/provider retention policies. Live export/deletion still require verification with controlled accounts after applying the migration.
 
 Suggested next product features: a focus timer, calendar view, assignment search/filtering, configurable opt-in due reminders, recurring assignments, and private personal study goals. These are suggestions, not implemented features; reminders would require explicit preferences and reliable email delivery.
+
+## Management-page polish
+
+Classes and assignments share the dashboard's light/dark visual language. Class cards show real completion progress and link to class-filtered assignments. Assignment search matches titles or class names; status, class and priority filters and sorting are stored in the URL. Enter a search and use Apply; status tabs preserve the other filters. Clear filters restores the full list. Overdue status is based on the current UTC date; completed assignments are excluded from overdue.
+
+Create forms collapse when records already exist and open on an empty workspace. Saving/completion/deletion controls show pending states. Assignment deletion requires opening its confirmation before submitting; class deletion still preserves assignments. Keyboard users can skip navigation to the workspace, and authenticated navigation has a loading skeleton.
+
+`npm run test:filters` checks combined filters, sorting, date boundaries, query normalization and nonmutation. `npm run test:visual` covers dashboard, classes and assignments with populated/empty/no-result fixtures, safe delete confirmations, and viewport checks in light/dark at 375/768/1440px. Isolated test action stubs do not verify hosted mutations. No new database migration or environment variable is required for these UI changes.

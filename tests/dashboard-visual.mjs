@@ -17,10 +17,12 @@ const css = (
 ).join("\n");
 await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import {DashboardView} from './src/components/dashboard-view';import {Brand} from './src/components/brand';import {writeFileSync} from 'node:fs';
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import {DashboardView} from './src/components/dashboard-view';import {Brand} from './src/components/brand';import {AssignmentWorkspace} from './src/components/assignment-workspace';import {ClassesWorkspace} from './src/components/classes-workspace';import {normalizeFilters} from './src/lib/assignment-filters';import {writeFileSync} from 'node:fs';
 const classes=[{id:'c1',name:'Introduction to Psychology',color:'#7065f0'},{id:'c2',name:'Design Studio',color:'#bd9a65'},{id:'c3',name:'World Literature',color:'#74a58f'}];
 const assignments=[{id:'a1',title:'Read chapter 4 and write a reflection',class_id:'c1',due_date:'2026-10-26',priority:'high',completed:false},{id:'a2',title:'Finish the visual research moodboard',class_id:'c2',due_date:'2026-10-26',priority:'medium',completed:false},{id:'a3',title:'Review notes for the seminar',class_id:'c3',due_date:'2026-10-28',priority:'low',completed:false},{id:'a4',title:'Submit the first project proposal',class_id:'c2',due_date:'2026-10-24',priority:'medium',completed:true}];
-for(const [name,data] of [['populated',{classes,assignments}],['empty',{classes:[],assignments:[]}]]){const html=renderToStaticMarkup(<div className="workspace"><aside className="sidebar"><Brand/><span className="nav-caption">YOUR WORKSPACE</span><nav><a className="nav-active" href="/dashboard">Overview</a><a href="/classes">My classes</a><a href="/assignments">Assignments</a><a href="/settings">Settings</a></nav></aside><main className="workspace-main"><DashboardView {...data} today="2026-10-26"/></main></div>);writeFileSync('.test-artifacts/'+name+'.html','<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+html+'</body></html>');}`,
+for(const [name,data] of [['populated',{classes,assignments}],['empty',{classes:[],assignments:[]}]]){const html=renderToStaticMarkup(<div className="workspace"><aside className="sidebar"><Brand/><span className="nav-caption">YOUR WORKSPACE</span><nav><a className="nav-active" href="/dashboard">Overview</a><a href="/classes">My classes</a><a href="/assignments">Assignments</a><a href="/settings">Settings</a></nav></aside><main className="workspace-main"><DashboardView {...data} today="2026-10-26"/></main></div>);writeFileSync('.test-artifacts/'+name+'.html','<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+html+'</body></html>');}
+const cases=[['assignments-populated',<AssignmentWorkspace classes={classes} assignments={assignments} filters={normalizeFilters({})} today="2026-10-26"/>],['assignments-empty',<AssignmentWorkspace classes={[]} assignments={[]} filters={normalizeFilters({})} today="2026-10-26"/>],['assignments-no-results',<AssignmentWorkspace classes={classes} assignments={assignments} filters={normalizeFilters({q:'no such assignment'})} today="2026-10-26"/>],['classes-populated',<ClassesWorkspace classes={classes} assignments={assignments}/>],['classes-empty',<ClassesWorkspace classes={[]} assignments={[]}/>]];
+for(const [name,view] of cases){const html=renderToStaticMarkup(<div className="workspace"><aside className="sidebar"><Brand/><span className="nav-caption">YOUR WORKSPACE</span><nav><a href="/dashboard">Overview</a><a href="/classes">My classes</a><a href="/assignments">Assignments</a><a href="/settings">Settings</a></nav></aside><main className="workspace-main">{view}</main></div>);writeFileSync('.test-artifacts/'+name+'.html','<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+html+'</body></html>');}`,
     resolveDir: root,
     loader: "tsx",
   },
@@ -41,7 +43,7 @@ for(const [name,data] of [['populated',{classes,assignments}],['empty',{classes:
         }));
         builder.onLoad({ filter: /.*/, namespace: "test" }, () => ({
           contents:
-            "export async function toggleAssignment(){};export async function deleteAssignment(){};export async function saveAssignment(){};",
+            "export async function toggleAssignment(){};export async function deleteAssignment(){};export async function saveAssignment(){};export async function saveClass(){};export async function deleteClass(){};",
           loader: "js",
         }));
       },
@@ -57,7 +59,15 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage();
-  for (const fixture of ["populated", "empty"])
+  for (const fixture of [
+    "populated",
+    "empty",
+    "assignments-populated",
+    "assignments-empty",
+    "assignments-no-results",
+    "classes-populated",
+    "classes-empty",
+  ])
     for (const width of [375, 768, 1440])
       for (const theme of ["light", "dark"]) {
         await page.setViewportSize({ width, height: 1050 });
@@ -69,7 +79,45 @@ try {
           (theme) => (document.documentElement.dataset.theme = theme),
           theme,
         );
-        await page.getByRole("heading", { name: "Today’s focus" }).waitFor();
+        if (fixture.startsWith("assignments-"))
+          await page
+            .getByRole("heading", { name: "Your assignments." })
+            .waitFor();
+        else if (fixture.startsWith("classes-"))
+          await page.getByRole("heading", { name: "Your classes." }).waitFor();
+        else
+          await page.getByRole("heading", { name: "Today’s focus" }).waitFor();
+        if (fixture === "assignments-no-results")
+          await page
+            .getByRole("heading", { name: "Nothing matches this view." })
+            .waitFor();
+        if (fixture === "assignments-populated") {
+          if (
+            await page
+              .getByRole("button", { name: "Delete permanently" })
+              .count()
+          )
+            throw Error("Delete button exposed before confirmation");
+          await page
+            .getByLabel("Delete Read chapter 4 and write a reflection", {
+              exact: true,
+            })
+            .click();
+          await page
+            .getByRole("button", { name: "Delete permanently" })
+            .waitFor();
+          const box = await page
+            .locator(".delete-popover")
+            .first()
+            .boundingBox();
+          if (!box || box.x < 0 || box.x + box.width > width + 1)
+            throw Error("Delete confirmation overflows viewport");
+          await page
+            .getByLabel("Delete Read chapter 4 and write a reflection", {
+              exact: true,
+            })
+            .click();
+        }
         if (
           await page.evaluate(
             () => document.documentElement.scrollWidth > innerWidth + 1,
@@ -94,7 +142,7 @@ try {
         });
       }
   console.log(
-    "PASS: real dashboard component, populated/empty fixtures, summary counts and no overflow at 375/768/1440px. Server mutations are stubbed only in this isolated test.",
+    "PASS: real dashboard/classes/assignments views, populated/empty/no-results states, delete confirmations, summary counts and no overflow in light/dark at 375/768/1440px. Server mutations are stubbed only in this isolated test.",
   );
 } finally {
   await browser.close();

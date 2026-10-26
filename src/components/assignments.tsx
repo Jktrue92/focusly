@@ -1,3 +1,4 @@
+import { ActionButton } from "./action-button";
 import { Check, Circle, Trash2 } from "lucide-react";
 import {
   deleteAssignment,
@@ -8,9 +9,11 @@ import type { Assignment, ClassRecord } from "@/lib/data";
 export function AssignmentForm({
   classes,
   assignment,
+  defaultClassId,
 }: {
   classes: ClassRecord[];
   assignment?: Assignment;
+  defaultClassId?: string;
 }) {
   return (
     <form action={saveAssignment} className="editor-form">
@@ -28,7 +31,10 @@ export function AssignmentForm({
       <div className="form-columns">
         <label>
           Class
-          <select name="class_id" defaultValue={assignment?.class_id ?? ""}>
+          <select
+            name="class_id"
+            defaultValue={assignment?.class_id ?? defaultClassId ?? ""}
+          >
             <option value="">No class</option>
             {classes.map((c) => (
               <option key={c.id} value={c.id}>
@@ -58,9 +64,9 @@ export function AssignmentForm({
           </select>
         </label>
       </div>
-      <button className="button small">
+      <ActionButton>
         {assignment ? "Save changes" : "Add assignment"}
-      </button>
+      </ActionButton>
     </form>
   );
 }
@@ -68,10 +74,12 @@ export function AssignmentList({
   assignments,
   classes,
   editable = false,
+  today,
 }: {
   assignments: Assignment[];
   classes: ClassRecord[];
   editable?: boolean;
+  today?: string;
 }) {
   if (!assignments.length)
     return (
@@ -95,12 +103,14 @@ export function AssignmentList({
                   name="completed"
                   value={String(!a.completed)}
                 />
-                <button
+                <ActionButton
+                  pendingLabel="Updating…"
+                  iconOnly
                   className={"check-button " + (a.completed ? "checked" : "")}
-                  aria-label={a.completed ? "Mark incomplete" : "Mark complete"}
+                  ariaLabel={`${a.completed ? "Mark incomplete:" : "Mark complete:"} ${a.title}`}
                 >
                   {a.completed ? <Check size={17} /> : <Circle size={20} />}
-                </button>
+                </ActionButton>
               </form>
               <div className="assignment-title">
                 <span style={{ color: course?.color ?? "#7065F0" }}>
@@ -109,22 +119,47 @@ export function AssignmentList({
                 <h3 className={a.completed ? "completed" : ""}>{a.title}</h3>
               </div>
               <span className={"priority " + a.priority}>{a.priority}</span>
-              <time dateTime={a.due_date}>
-                {new Date(a.due_date + "T12:00:00Z").toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", timeZone: "UTC" },
-                )}
+              <time
+                dateTime={a.due_date}
+                title={
+                  (today && !a.completed && a.due_date < today
+                    ? "Overdue · "
+                    : "Due ") + a.due_date
+                }
+                className={
+                  today && !a.completed && a.due_date < today
+                    ? "due-overdue"
+                    : today === a.due_date && !a.completed
+                      ? "due-today"
+                      : ""
+                }
+              >
+                {today === a.due_date && !a.completed
+                  ? "Today"
+                  : new Date(a.due_date + "T12:00:00Z").toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", timeZone: "UTC" },
+                    )}
               </time>
               {editable && (
-                <form action={deleteAssignment}>
-                  <input name="id" type="hidden" value={a.id} />
-                  <button
-                    className="icon-button"
-                    aria-label={"Delete " + a.title}
-                  >
+                <details className="assignment-delete">
+                  <summary aria-label={"Delete " + a.title}>
                     <Trash2 size={16} />
-                  </button>
-                </form>
+                  </summary>
+                  <div className="delete-popover">
+                    <strong>Delete this assignment?</strong>
+                    <p>This permanently removes “{a.title}”.</p>
+                    <form action={deleteAssignment}>
+                      <input name="id" type="hidden" value={a.id} />
+                      <ActionButton
+                        className="danger-button"
+                        pendingLabel="Deleting…"
+                      >
+                        Delete permanently
+                      </ActionButton>
+                    </form>
+                  </div>
+                </details>
               )}
             </div>
             {editable && (

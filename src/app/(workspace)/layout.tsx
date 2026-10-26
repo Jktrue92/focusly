@@ -12,6 +12,9 @@ export default async function WorkspaceLayout({
   await requireUser();
   return (
     <div className="workspace">
+      <a className="skip-link" href="#workspace-content">
+        Skip to workspace
+      </a>
       <aside className="sidebar">
         <Brand />
         <span className="nav-caption">YOUR WORKSPACE</span>
@@ -35,7 +38,9 @@ export default async function WorkspaceLayout({
           </form>
         </div>
       </aside>
-      <main className="workspace-main">{children}</main>
+      <main id="workspace-content" tabIndex={-1} className="workspace-main">
+        {children}
+      </main>
     </div>
   );
 }
