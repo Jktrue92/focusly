@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient, isConfigured } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/data";
+import { authErrorMessage } from "@/lib/auth-errors";
 function text(form: FormData, key: string, max = 120) {
   const value = String(form.get(key) ?? "").trim();
   if (!value || value.length > max) throw new Error(`Invalid ${key}.`);
@@ -45,10 +46,14 @@ export async function authenticate(form: FormData) {
     mode === "signup"
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password });
-  if (error)
-    redirect(
-      `/${mode}?message=${encodeURIComponent(mode === "login" ? "Sign in failed. Check your credentials and email confirmation." : "Unable to create account. Try again or sign in.")}`,
-    );
+  if (error) {
+    console.error('Focusly authentication failed', {
+      operation: mode,
+      code: error.code ?? 'unknown',
+      status: error.status,
+    });
+    redirect(`/${mode}?message=${encodeURIComponent(authErrorMessage(error, mode))}`);
+  }
   if (!data.session)
     redirect(
       "/login?message=Check+your+email+to+confirm+your+account,+then+sign+in.",
